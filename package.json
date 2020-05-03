@@ -5,6 +5,9 @@
     "appDisplayName": "FitNote",
     "iconFile": "resources/icon.png",
     "wipeColor": "#CA64EA",
+    "requestedPermissions": [
+      "access_internet"
+    ],
     "buildTargets": [
       "higgs",
       "meson",
