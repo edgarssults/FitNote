@@ -1,0 +1,29 @@
+{
+  "fitbit": {
+    "appUUID": "e8173d62-e539-4503-b4e3-5fbbaaf09fbc",
+    "appType": "app",
+    "appDisplayName": "FitNote",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#CA64EA",
+    "buildTargets": [
+      "higgs",
+      "meson",
+      "gemini",
+      "mira"
+    ],
+    "i18n": {
+      "en": {
+        "name": "FitNote"
+      }
+    },
+    "defaultLanguage": "en-US"
+  },
+  "devDependencies": {
+    "@fitbit/sdk": "~4.1.0",
+    "@fitbit/sdk-cli": "^1.7.1",
+    "fitbit-sdk-types": "^4.3.6"
+  },
+  "scripts": {
+    "build": "fitbit-build"
+  }
+}

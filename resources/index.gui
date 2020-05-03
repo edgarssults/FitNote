@@ -1,0 +1,215 @@
+<svg viewport-fill="#201F1E">
+  <defs>
+    <symbol id="dynamic-textarea" type="dynamic-textarea" system-events="all">
+      <textarea id="text" fill="#EDEBE9" x="5" y="5" width="100%-10" font-size="24" font-family="System-Regular" text-length="1024" />
+    </symbol>
+  </defs>
+
+  <image id="introImage" x="50%-40" y="40" width="80" height="80" href="icon.png" visibility="visible" />
+  <use id="introText" y="160" href="#dynamic-textarea" visibility="visible">
+    <set href="text" attributeName="text-buffer" to="Sync a note to the watch from the FitNote app settings on your phone." />
+    <set href="text" attributeName="text-anchor" to="middle" />
+  </use>
+
+  <use id="sv" href="#scrollview" visibility="hidden">
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note0" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note1" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note2" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note3" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note4" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note5" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note6" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note7" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note8" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note9" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note10" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note11" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note12" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note13" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note14" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note15" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note16" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note17" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note18" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note19" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note20" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note21" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note22" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note23" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note24" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note25" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note26" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note27" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note28" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note29" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note30" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note31" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note32" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note33" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note34" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note35" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note36" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note37" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note38" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note39" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note40" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note41" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note42" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note43" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note44" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note45" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note46" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note47" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note48" />
+    </use>
+
+    <use href="#scrollview-item">
+      <use href="#dynamic-textarea" id="note49" />
+    </use>
+  </use>
+</svg>
