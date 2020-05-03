@@ -49,7 +49,7 @@ function displayNote(paragraphs: any) {
 
   // Clear other texts
   if (paragraphs.length < maxParagraphCount) {
-    for (let i = Math.min(paragraphs.length, maxParagraphCount) - 1; i < maxParagraphCount; i++) {
+    for (let i = Math.min(paragraphs.length, maxParagraphCount); i < maxParagraphCount; i++) {
       let note = <GraphicsElement>document.getElementById(`note${i}`);
       if (note) {
         note.text = '';
