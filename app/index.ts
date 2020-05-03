@@ -8,6 +8,7 @@ const singleNoteFileName = 'SingleNote.json';
 console.log('Started');
 
 const scrollView = <GraphicsElement>document.getElementById("sv");
+const border = <GraphicsElement>document.getElementById("border");
 const introImage = <GraphicsElement>document.getElementById("introImage");
 const introText = <GraphicsElement>document.getElementById("introText");
 
@@ -32,7 +33,8 @@ function displayNote(paragraphs: any) {
   }
 
   // Scroll to top and show the paragraph list
-  if (scrollView) {
+  if (scrollView && border) {
+    border.style.visibility = 'visible';
     scrollView.style.visibility = 'visible';
     scrollView.value = 0;
   }

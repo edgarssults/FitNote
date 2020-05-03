@@ -1,17 +1,19 @@
 <svg viewport-fill="#201F1E">
   <defs>
     <symbol id="dynamic-textarea" type="dynamic-textarea" system-events="all">
-      <textarea id="text" fill="#EDEBE9" x="5" y="5" width="100%-10" font-size="24" font-family="System-Regular" text-length="1024" />
+      <textarea id="text" fill="#EDEBE9" x="5" y="5" width="100%-10" font-size="30" font-family="System-Regular" text-length="1024" />
     </symbol>
   </defs>
 
   <image id="introImage" x="50%-40" y="40" width="80" height="80" href="icon.png" visibility="visible" />
-  <use id="introText" y="160" href="#dynamic-textarea" visibility="visible">
+  <use id="introText" y="140" href="#dynamic-textarea" visibility="visible">
     <set href="text" attributeName="text-buffer" to="Sync a note to the watch from the FitNote app settings on your phone." />
     <set href="text" attributeName="text-anchor" to="middle" />
   </use>
 
-  <use id="sv" href="#scrollview" visibility="hidden">
+  <rect id="border" x="0" y="0" width="2" height="100%" fill="#CA64EA" visibility="hidden" />
+
+  <use id="sv" href="#scrollview" x="2" y="0" visibility="hidden">
     <use href="#scrollview-item">
       <use href="#dynamic-textarea" id="note0" />
     </use>
