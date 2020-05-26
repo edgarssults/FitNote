@@ -101,6 +101,7 @@ function sendToApp(noteContent: string) {
  * @param error Error string.
  */
 function setSyncError(error: string) {
-  console.warn(error);
+  // TODO: Utils
+  console.error(error);
   settingsStorage.setItem('syncError', error);
 }

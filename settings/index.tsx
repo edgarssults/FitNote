@@ -13,16 +13,23 @@ registerSettingsPage(({ settings, settingsStorage }) => {
               requestTokenUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
               clientId="98d88e94-97a8-42dc-a692-cdcb8f79a9f3"
               clientSecret=""
-              scope="openid offline_access profile User.Read Notes.Read"
+              scope="openid profile User.Read Notes.Read offline_access"
               description="Test OAuth description"
             />
         }
         {settingExists(settingsStorage, 'oauthExpires') &&
           <Text>Expires {getDateString(settingsStorage, 'oauthExpires')}</Text>
         }
+        {settingExists(settingsStorage, 'oauthExpires') && !isAccessTokenValid(settingsStorage) &&
+          <Button
+            list
+            label="Refresh Access"
+            onClick={() => refresh(settingsStorage)}
+          />
+        }
       </Section>
       
-      {settingExists(settingsStorage, 'notes') &&
+      {isAccessTokenValid(settingsStorage) && settingExists(settingsStorage, 'notes') &&
         <Section title={<Text bold align="center">Notes</Text>}>
           <Select
             label={`Select a note to sync`}
@@ -39,9 +46,9 @@ registerSettingsPage(({ settings, settingsStorage }) => {
           {settingExists(settingsStorage, 'selectedNote') &&
             <Button
               list
-              label="Sync now"
+              label="Sync Now"
               onClick={() => syncNoteNow(settingsStorage)}
-          />
+            />
           }
         </Section>
       }
@@ -62,7 +69,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
  * @param settingsStorage Settings storage instance.
  * @param settingName Setting name.
  */
-function settingExists(settingsStorage: LiveStorage, settingName: string) {
+function settingExists(settingsStorage: LiveStorage, settingName: string): boolean {
   let setting = settingsStorage.getItem(settingName);
   
   if (!setting) {
@@ -76,7 +83,7 @@ function settingExists(settingsStorage: LiveStorage, settingName: string) {
  * Gets a list of notes from settings.
  * @param settingsStorage Settings storage instance.
  */
-function getNotes(settingsStorage: LiveStorage) {
+function getNotes(settingsStorage: LiveStorage): Array<any> {
   let notes = settingsStorage.getItem('notes');
   return notes ? JSON.parse(notes) : [];
 }
@@ -86,7 +93,7 @@ function getNotes(settingsStorage: LiveStorage) {
  * @param settingsStorage Settings storage instance.
  * @param settingName Setting name.
  */
-function getDateString(settingsStorage: LiveStorage, settingName: string) {
+function getDateString(settingsStorage: LiveStorage, settingName: string): string {
   let dateSetting = settingsStorage.getItem(settingName);
   if (!dateSetting) {
     return '[never]';
@@ -99,7 +106,7 @@ function getDateString(settingsStorage: LiveStorage, settingName: string) {
  * Resets everything (except whatever's synced to the watch).
  * @param settingsStorage Settings storage instance.
  */
-function reset(settingsStorage: LiveStorage) {
+function reset(settingsStorage: LiveStorage): void {
   settingsStorage.clear();
 }
 
@@ -107,6 +114,32 @@ function reset(settingsStorage: LiveStorage) {
  * Initiates selected note syncing.
  * @param settingsStorage Settings storage instance.
  */
-function syncNoteNow(settingsStorage: LiveStorage) {
+function syncNoteNow(settingsStorage: LiveStorage): void {
   settingsStorage.setItem('syncSelectedNote', 'true');
+}
+
+/**
+ * Initiates access token refresh.
+ * @param settingsStorage Settings storage instance.
+ */
+function refresh(settingsStorage: LiveStorage): void {
+  settingsStorage.setItem('refreshAccessToken', 'true');
+}
+
+/**
+ * Determines whether the access token is valid.
+ * @param settingsStorage Settings storage instance.
+ */
+function isAccessTokenValid(settingsStorage: LiveStorage): boolean {
+  let expirySetting = settingsStorage.getItem('oauthExpires');
+  if (!expirySetting) {
+    return false;
+  }
+
+  let expiry = parseInt(expirySetting);
+  if (expiry <= Date.now()) {
+    return false;
+  }
+
+  return true;
 }

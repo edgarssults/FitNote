@@ -3,7 +3,13 @@ import { settingsStorage } from "settings";
 import { me } from "companion";
 import { getProfile } from "./logic/profile";
 import { getNotes, syncSelectedNote } from "./logic/notes";
-import { setExpiry } from "./logic/oauth";
+import { setExpiry, refreshAccessToken } from "./logic/oauth";
+
+// Reset the settings used to communicate with the settings page
+settingsStorage.removeItem('syncSelectedNote');
+settingsStorage.removeItem('syncError');
+settingsStorage.removeItem('selectedNoteSynced');
+settingsStorage.removeItem('refreshAccessToken');
 
 if (me.launchReasons.settingsChanged) {
   console.warn('Settings were changed while companions was not running...');
@@ -45,6 +51,11 @@ settingsStorage.onchange = evt => {
   // User has changed the selected note or wants to sync it again
   if ((evt.key === 'selectedNote' || evt.key === 'syncSelectedNote') && evt.newValue) {
     syncSelectedNote();
+    return;
+  }
+
+  if (evt.key === 'refreshAccessToken' && evt.newValue) {
+    refreshAccessToken();
     return;
   }
 };

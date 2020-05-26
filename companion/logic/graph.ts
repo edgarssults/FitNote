@@ -1,3 +1,6 @@
+import { settingsStorage } from "settings";
+import { setExpiry } from "./oauth";
+
 /**
  * Gets JSON from an MS Graph API endpoint.
  * @param endpoint API endpoint.
@@ -6,7 +9,7 @@
  */
 export function getGraphJson(endpoint: string, token: string, callback: (data: any, endpoint: string) => void) {
   // TODO: No callback
-  
+
   const headers = new Headers({
     "Authorization": `Bearer ${token}`
   });
@@ -19,7 +22,7 @@ export function getGraphJson(endpoint: string, token: string, callback: (data: a
   fetch(endpoint, options)
     .then(response => response.json())
     .then(response => callback(response, endpoint))
-    .catch(error => console.error(JSON.stringify(error)));
+    .catch(error => console.error(error.message));
 }
 
 /**
@@ -30,18 +33,18 @@ export function getGraphJson(endpoint: string, token: string, callback: (data: a
  */
 export function getGraphText(endpoint: string, token: string, callback: (data: string, endpoint: string) => void) {
   // TODO: No callback
-  
+
   const headers = new Headers({
-    "Authorization": `Bearer ${token}`
+    'Authorization': `Bearer ${token}`
   });
 
   const options = {
-      method: "GET",
+      method: 'GET',
       headers: headers
   };
   
   fetch(endpoint, options)
     .then(response => response.text())
     .then(response => callback(response, endpoint))
-    .catch(error => console.error(JSON.stringify(error)));
+    .catch(error => console.error(error.message));
 }
