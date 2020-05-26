@@ -7,12 +7,11 @@ import { setExpiry, refreshAccessToken } from "./logic/oauth";
 
 // Reset the settings used to communicate with the settings page
 settingsStorage.removeItem('syncSelectedNote');
-settingsStorage.removeItem('syncError');
-settingsStorage.removeItem('selectedNoteSynced');
 settingsStorage.removeItem('refreshAccessToken');
 
 if (me.launchReasons.settingsChanged) {
-  console.warn('Settings were changed while companions was not running...');
+  console.warn('Settings were changed while companion was not running...');
+  // TODO: Sync note again, it might have changed
 }
 
 /**

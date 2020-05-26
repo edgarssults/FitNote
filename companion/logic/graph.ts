@@ -4,7 +4,7 @@
  * @param token API token.
  * @param callback Callback function.
  */
-export function getGraphJson(endpoint: string, token: string, callback: (data: any, endpoint: string) => void) {
+export function getGraphJson(endpoint: string, token: string, callback: (data: any, endpoint: string) => void): void {
   // TODO: No callback
 
   const headers = new Headers({
@@ -28,7 +28,7 @@ export function getGraphJson(endpoint: string, token: string, callback: (data: a
  * @param token API token.
  * @param callback Callback function.
  */
-export function getGraphText(endpoint: string, token: string, callback: (data: string, endpoint: string) => void) {
+export function getGraphText(endpoint: string, token: string, callback: (data: string, endpoint: string) => void): void {
   // TODO: No callback
 
   const headers = new Headers({

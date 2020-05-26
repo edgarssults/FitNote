@@ -23,7 +23,7 @@ if (fs.existsSync(singleNoteFileName)) {
  * Displays the note.
  * @param paragraphs Note.
  */
-function displayNote(paragraphs: any) {
+function displayNote(paragraphs: any): void {
   // TODO: Add a loader?
 
   // Hide intro image and text

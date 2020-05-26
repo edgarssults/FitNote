@@ -6,7 +6,7 @@ import { getOAuthToken } from "./oauth";
 /**
  * Gets notes from MS Graph API.
  */
-export function getNotes() {
+export function getNotes(): void {
   let token = getOAuthToken();
   if (!token) {
     console.error('getNotes: Could not get OAuth token!');
@@ -20,7 +20,7 @@ export function getNotes() {
  * Sets retrieved notes in settings.
  * @param noteData Notes.
  */
-function setNotes(noteData: any) {
+function setNotes(noteData: any): void {
   let notes = noteData.value.map((n: { title: string; id: string; }) => ({ name: n.title, value: n.id }));
   settingsStorage.setItem('notes', JSON.stringify(notes));
 }
@@ -28,7 +28,7 @@ function setNotes(noteData: any) {
 /**
  * Syncs the selected note with the watch.
  */
-export function syncSelectedNote() {
+export function syncSelectedNote(): void {
   // Reset the settings used to communicate with the settings page
   settingsStorage.removeItem('syncSelectedNote');
   settingsStorage.removeItem('syncError');
@@ -56,7 +56,7 @@ export function syncSelectedNote() {
  * Sends note content to the watch after processing it.
  * @param noteContent Note HTML content.
  */
-function sendToApp(noteContent: string) {
+function sendToApp(noteContent: string): void {
   if (!noteContent || noteContent.length == 0) {
     setSyncError('Note is empty!');
     return;
@@ -95,7 +95,7 @@ function sendToApp(noteContent: string) {
  * Set a sync error to display to the user.
  * @param error Error string.
  */
-function setSyncError(error: string) {
+function setSyncError(error: string): void {
   console.error(error);
   settingsStorage.setItem('syncError', error);
 }
