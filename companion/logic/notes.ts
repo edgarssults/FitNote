@@ -34,16 +34,11 @@ export function syncSelectedNote() {
   settingsStorage.removeItem('syncError');
   settingsStorage.removeItem('selectedNoteSynced');
 
-  // Get oauth setting so that we can get the received token
-  let oauthSetting = settingsStorage.getItem('oauth');
-  if (!oauthSetting) {
-    console.error('Could not find oauth setting!');
+  let token = getOAuthToken();
+  if (!token) {
+    console.error('syncSelectedNote: Could not get OAuth token!');
     return;
   }
-
-  // Parse setting to get the token
-  let oauth = JSON.parse(oauthSetting);
-  let token = oauth.access_token;
 
   // Get the selectedNote setting
   let selectedNoteSetting = settingsStorage.getItem('selectedNote');
@@ -101,7 +96,6 @@ function sendToApp(noteContent: string) {
  * @param error Error string.
  */
 function setSyncError(error: string) {
-  // TODO: Utils
   console.error(error);
   settingsStorage.setItem('syncError', error);
 }

@@ -2,36 +2,32 @@ import { settingsStorage } from "settings";
 import { getNotes } from "./notes";
 
 /**
- * Gets the OAuth token from settings.
+ * Gets the OAuth data from settings.
  */
-export function getOAuthToken(): string | null {
-  // Get the OAuth setting
+function GetOAuthData(): any {
   let oauthSetting = settingsStorage.getItem('oauth');
   if (!oauthSetting) {
     console.error('Could not find oauth setting!');
     return null;
   }
 
-  // Parse setting to get the token
   let oauth = JSON.parse(oauthSetting);
-  let token = oauth.access_token;
+  return oauth;
+}
 
-  return token;
+/**
+ * Gets the OAuth token from settings.
+ */
+export function getOAuthToken(): string | null {
+  let oauth = GetOAuthData();
+  return oauth.access_token;
 }
 
 /**
  * Sets the token expiry time in settings.
  */
-export function setExpiry() {
-  // Get the OAuth setting
-  let oauthSetting = settingsStorage.getItem('oauth');
-  if (!oauthSetting) {
-    console.error('Could not find oauth setting!');
-    return;
-  }
-
-  // Parse setting to get the expiry time (seconds)
-  let oauth = JSON.parse(oauthSetting);
+export function setExpiry(): void {
+  let oauth = GetOAuthData();
   let lifeSeconds = oauth.expires_in;
 
   // Calculate expiry time (milliseconds since January 1, 1970 00:00:00 UTC)
@@ -43,15 +39,10 @@ export function setExpiry() {
 /**
  * Refreshes the MS Graph API access token.
  */
-export function refreshAccessToken() {
+export function refreshAccessToken(): void {
   settingsStorage.removeItem('refreshAccessToken');
 
-  let oauthSetting = settingsStorage.getItem('oauth');
-  if (!oauthSetting) {
-    console.error('Could not find oauth setting!');
-    return;
-  }
-  let oauth = JSON.parse(oauthSetting);
+  let oauth = GetOAuthData();
 
   const headers = new Headers({
     'Content-Type': 'application/x-www-form-urlencoded'
