@@ -1,6 +1,3 @@
-import { settingsStorage } from "settings";
-import { setExpiry } from "./oauth";
-
 /**
  * Gets JSON from an MS Graph API endpoint.
  * @param endpoint API endpoint.
