@@ -86,6 +86,9 @@ function sendToApp(noteContent: string): void {
   if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
     messaging.peerSocket.send(contentArray);
     settingsStorage.setItem('selectedNoteSynced', Date.now().toString());
+  } else if (messaging.peerSocket.readyState === messaging.peerSocket.CLOSED) {
+    // TODO: Save synced note and send it to the watch when the app starts up
+    setSyncError('Open the app on the watch to sync.');
   } else {
     setSyncError('Could not send note to watch!');
   }
