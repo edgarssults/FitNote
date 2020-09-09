@@ -11,3 +11,7 @@ Available in the [Fitbit App Gallery](https://gallery.fitbit.com/details/e8173d6
 Follow the official [command line interface guide](https://dev.fitbit.com/build/guides/command-line-interface/) from Fitbit.
 
 In VS Code command line run `npx fitbit`. Then run either `build` to build the app or `install` to install it on the simulator or device. Can also run `bi` to both build and install.
+
+# Credits
+
+Smartwatch icon made by [Freepik](https://www.flaticon.com/authors/freepik) from [Flaticon](https://www.flaticon.com/).
