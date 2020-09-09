@@ -1,5 +1,4 @@
 import { settingsStorage } from "settings";
-import { getNotes } from "./notes";
 
 /**
  * Gets the OAuth data from settings.
@@ -39,7 +38,7 @@ export function setExpiry(): void {
 /**
  * Refreshes the MS Graph API access token.
  */
-export function refreshAccessToken(): void {
+export function refreshAccessToken(): Promise<void> {
   settingsStorage.removeItem('refreshAccessToken');
 
   let oauth = GetOAuthData();
@@ -57,12 +56,11 @@ export function refreshAccessToken(): void {
       &grant_type=refresh_token`
   };
 
-  fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', options)
+  return fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', options)
     .then(response => response.json())
     .then(response => {
       settingsStorage.setItem('oauth', JSON.stringify(response));
       setExpiry();
-      getNotes();
     })
     .catch(error => console.error(error.message));
 }

@@ -53,8 +53,9 @@ settingsStorage.onchange = evt => {
     return;
   }
 
+  // User has requested a new access token
   if (evt.key === 'refreshAccessToken' && evt.newValue) {
-    refreshAccessToken();
+    refreshAccessToken().then(getNotes);
     return;
   }
 };
