@@ -11,6 +11,16 @@ settingsStorage.removeItem('refreshAccessToken');
 
 if (me.launchReasons.settingsChanged) {
   console.warn('Settings were changed while companion was not running...');
+
+  // User has changed the selected note or wants to sync it again
+  if (settingExists('syncSelectedNote') || settingExists('selectedNote')) {
+    syncSelectedNote();
+  }
+
+  // User has requested a new access token
+  if (settingExists('refreshAccessToken')) {
+    refreshAccessToken().then(getNotes);
+  }
 }
 
 /**
@@ -69,3 +79,17 @@ settingsStorage.onchange = evt => {
     return;
   }
 };
+
+/**
+ * Determines whether a settings exists in the settings storage.
+ * @param settingName Setting name.
+ */
+function settingExists(settingName: string): boolean {
+  let setting = settingsStorage.getItem(settingName);
+  
+  if (!setting) {
+    return false;
+  }
+  
+  return setting.length > 0;
+}
