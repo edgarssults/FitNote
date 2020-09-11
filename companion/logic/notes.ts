@@ -1,4 +1,4 @@
-import * as messaging from "messaging";
+import { peerSocket } from 'messaging';
 import { settingsStorage } from "settings";
 import { getGraphText, getGraphJson } from "./graph";
 import { getOAuthToken } from "./oauth";
@@ -55,6 +55,26 @@ export function syncSelectedNote(): void {
 }
 
 /**
+ * Syncs the note that's sitting in the queue with the watch.
+ */
+export function syncQueuedNote(): void {
+  let queuedNoteSetting = settingsStorage.getItem('queuedNote');
+  if (!queuedNoteSetting) {
+    console.log('No note queued');
+    return;
+  }
+
+  let queuedNote = JSON.parse(queuedNoteSetting);
+  if (peerSocket.readyState === peerSocket.OPEN) {
+    peerSocket.send(queuedNote);
+    settingsStorage.removeItem('queuedNote');
+    console.log('Queued note sent to app');
+  } else {
+    setSyncError('Could not send note to watch!');
+  }
+}
+
+/**
  * Sends note content to the watch after processing it.
  * @param noteContent Note HTML content.
  */
@@ -85,12 +105,16 @@ function sendToApp(noteContent: string): void {
   }
   
   // Send the gathered content to the watch
-  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-    messaging.peerSocket.send(contentArray);
+  if (peerSocket.readyState === peerSocket.OPEN) {
+    // Send the note to the watch right away
+    peerSocket.send(contentArray);
     settingsStorage.setItem('selectedNoteSynced', Date.now().toString());
-  } else if (messaging.peerSocket.readyState === messaging.peerSocket.CLOSED) {
-    // TODO: Save synced note and send it to the watch when the app starts up
-    setSyncError('Open the app on the watch to sync.');
+    console.log('Note sent to app');
+  } else if (peerSocket.readyState === peerSocket.CLOSED) {
+    // Queue the note for sending as soon as the app is started on the watch
+    settingsStorage.setItem('queuedNote', JSON.stringify(contentArray));
+    settingsStorage.setItem('selectedNoteSynced', Date.now().toString());
+    console.log('Note queued for sending to app');
   } else {
     setSyncError('Could not send note to watch!');
   }

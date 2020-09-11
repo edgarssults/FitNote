@@ -2,7 +2,7 @@ import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 import { me } from "companion";
 import { getProfile } from "./logic/profile";
-import { getNotes, syncSelectedNote } from "./logic/notes";
+import { getNotes, syncSelectedNote, syncQueuedNote } from "./logic/notes";
 import { setExpiry, refreshAccessToken } from "./logic/oauth";
 
 // Reset the settings used to communicate with the settings page
@@ -11,8 +11,18 @@ settingsStorage.removeItem('refreshAccessToken');
 
 if (me.launchReasons.settingsChanged) {
   console.warn('Settings were changed while companion was not running...');
-  // TODO: What do?
 }
+
+/**
+ * Message is received.
+ */
+peerSocket.onmessage = message => {
+  console.log('Received message from app');
+  if (message.data.type === 'QueuedMessageRequest') {
+    console.log('Checking for queued notes...');
+    syncQueuedNote();
+  }
+};
 
 /**
  * Message socket opens.

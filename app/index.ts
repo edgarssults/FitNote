@@ -21,7 +21,7 @@ if (fs.existsSync(singleNoteFileName)) {
  * Displays the note.
  * @param paragraphs Note.
  */
-function displayNote(paragraphs: any): void {
+function displayNote(paragraphs: string[]): void {
   // TODO: Add a loader?
 
   // Hide intro image and text
@@ -64,11 +64,11 @@ function displayNote(paragraphs: any): void {
 /**
  * Message is received.
  */
-peerSocket.onmessage = evt => {
-  console.log(`Received:\n${JSON.stringify(evt)}`);
-  fs.writeFileSync(singleNoteFileName, evt.data, 'json');
+peerSocket.onmessage = message => {
+  console.log('Received message from companion');
   console.log('Loading note from message...');
-  displayNote(evt.data);
+  fs.writeFileSync(singleNoteFileName, message.data, 'json');
+  displayNote(message.data);
 };
 
 /**
@@ -76,6 +76,12 @@ peerSocket.onmessage = evt => {
  */
 peerSocket.onopen = () => {
   console.log("Socket Open");
+
+  // Request a queued note from the companion
+  console.log('Checking for queued notes...');
+  peerSocket.send({
+    type: 'QueuedMessageRequest'
+  });
 };
 
 /**
