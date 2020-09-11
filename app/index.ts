@@ -5,8 +5,6 @@ import * as fs from 'fs';
 const maxParagraphCount = 50;
 const singleNoteFileName = 'SingleNote.json';
 
-console.log('Started');
-
 const scrollView = <GraphicsElement>document.getElementById("sv");
 const border = <GraphicsElement>document.getElementById("border");
 const introImage = <GraphicsElement>document.getElementById("introImage");

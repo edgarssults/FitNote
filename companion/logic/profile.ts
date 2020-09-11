@@ -12,7 +12,8 @@ export function getProfile() {
     return;
   }
 
-  getGraphJson('https://graph.microsoft.com/v1.0/me', token, setProfile);
+  getGraphJson('https://graph.microsoft.com/v1.0/me', token)
+    .then(response => setProfile(response))
 }
 
 /**

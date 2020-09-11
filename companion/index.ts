@@ -11,7 +11,7 @@ settingsStorage.removeItem('refreshAccessToken');
 
 if (me.launchReasons.settingsChanged) {
   console.warn('Settings were changed while companion was not running...');
-  // TODO: Sync note again, it might have changed
+  // TODO: What do?
 }
 
 /**

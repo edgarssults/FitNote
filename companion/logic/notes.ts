@@ -1,6 +1,6 @@
 import * as messaging from "messaging";
 import { settingsStorage } from "settings";
-import { getGraphJson, getGraphText } from "./graph";
+import { getGraphText, getGraphJson } from "./graph";
 import { getOAuthToken } from "./oauth";
 
 /**
@@ -13,7 +13,8 @@ export function getNotes(): void {
     return;
   }
 
-  getGraphJson('https://graph.microsoft.com/v1.0/me/onenote/pages?$select=id,title&$orderBy=lastModifiedDateTime%20desc', token, setNotes);
+  getGraphJson('https://graph.microsoft.com/v1.0/me/onenote/pages?$select=id,title&$orderBy=lastModifiedDateTime%20desc', token)
+    .then(response => setNotes(response));
 }
 
 /**
@@ -49,7 +50,8 @@ export function syncSelectedNote(): void {
 
   // Get the selected note's content
   let selectedNote = JSON.parse(selectedNoteSetting);
-  getGraphText(`https://graph.microsoft.com/v1.0/me/onenote/pages/${selectedNote.values[0].value}/content`, token, sendToApp);
+  getGraphText(`https://graph.microsoft.com/v1.0/me/onenote/pages/${selectedNote.values[0].value}/content`, token)
+    .then(response => sendToApp(response));
 }
 
 /**
