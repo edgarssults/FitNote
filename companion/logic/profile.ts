@@ -14,6 +14,7 @@ export function getProfile() {
 
   getGraphJson('https://graph.microsoft.com/v1.0/me', token)
     .then(response => setProfile(response))
+    .catch(error => console.error(error.message));
 }
 
 /**

@@ -14,7 +14,8 @@ export function getNotes(): void {
   }
 
   getGraphJson('https://graph.microsoft.com/v1.0/me/onenote/pages?$select=id,title&$orderBy=lastModifiedDateTime%20desc', token)
-    .then(response => setNotes(response));
+    .then(response => setNotes(response))
+    .catch(error => console.error(error.message));
 }
 
 /**
