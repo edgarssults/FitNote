@@ -15,6 +15,20 @@ function GetOAuthData(): any {
 }
 
 /**
+ * TODO
+ */
+function GetOAuthResponseData(): any {
+  let oauthSetting = settingsStorage.getItem('oauth-response');
+  if (!oauthSetting) {
+    console.error('Could not find oauth-response setting!');
+    return null;
+  }
+
+  let oauth = JSON.parse(oauthSetting);
+  return oauth;
+}
+
+/**
  * Gets the OAuth token from settings.
  */
 export function getOAuthToken(): string | null {
@@ -36,6 +50,36 @@ export function setExpiry(): void {
 }
 
 /**
+ * TODO
+ */
+export function getAccessToken(): Promise<void> {
+  let oauth = GetOAuthResponseData();
+  settingsStorage.removeItem('oauth-response');
+
+  const headers = new Headers({
+    'Content-Type': 'application/x-www-form-urlencoded'
+  });
+  const options = {
+      method: 'POST',
+      headers: headers,
+      body: `client_id=98d88e94-97a8-42dc-a692-cdcb8f79a9f3
+      &scope=${encodeURI('openid profile User.Read Notes.Read')}
+      &redirect_uri=${encodeURI('https://app-settings.fitbitdevelopercontent.com/simple-redirect.html')}
+      &grant_type=authorization_code
+      &state=${oauth.state}
+      &code=${oauth.code}`
+  };
+
+  return fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', options)
+    .then(response => response.json())
+    .then(response => {
+      settingsStorage.setItem('oauth', JSON.stringify(response));
+      setExpiry();
+    })
+    .catch(error => console.error(error.message));
+}
+
+/**
  * Refreshes the MS Graph API access token.
  */
 export function refreshAccessToken(): Promise<void> {
@@ -50,7 +94,7 @@ export function refreshAccessToken(): Promise<void> {
       method: 'POST',
       headers: headers,
       body: `client_id=98d88e94-97a8-42dc-a692-cdcb8f79a9f3
-      &scope=${encodeURI(oauth.scope)}%20offline_access
+      &scope=${encodeURI(oauth.scope)}
       &refresh_token=${oauth.refresh_token}
       &redirect_uri=${encodeURI('https://app-settings.fitbitdevelopercontent.com/simple-redirect.html')}
       &grant_type=refresh_token`

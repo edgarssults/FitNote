@@ -5,7 +5,6 @@ registerSettingsPage(({ settings, settingsStorage }) => {
         {settingExists(settingsStorage, 'oauth')
           ? <Text>Logged in as {settingsStorage.getItem('displayName')} ({settingsStorage.getItem('userPrincipalName')})</Text>
           : <Oauth
-              settingsKey="oauth"
               title="Microsoft Account Login"
               label="Microsoft Account"
               status="Login"
@@ -13,8 +12,11 @@ registerSettingsPage(({ settings, settingsStorage }) => {
               requestTokenUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
               clientId="98d88e94-97a8-42dc-a692-cdcb8f79a9f3"
               clientSecret=""
-              scope="openid profile User.Read Notes.Read offline_access"
-              description="Test OAuth description"
+              scope="openid profile User.Read Notes.Read"
+              description="Please log in with your Microsoft account to see your notes"
+              onReturn={async (response) => {
+                settingsStorage.setItem('oauth-response', JSON.stringify(response));
+              }}
             />
         }
         {settingExists(settingsStorage, 'oauthExpires') &&
