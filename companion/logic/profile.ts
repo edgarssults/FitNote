@@ -22,6 +22,6 @@ export function getProfile() {
  * @param profileData Profile.
  */
 function setProfile(profileData: any) {
-  settingsStorage.setItem('displayName', profileData.displayName);
-  settingsStorage.setItem('userPrincipalName', profileData.userPrincipalName);
+  settingsStorage.setItem('displayName', profileData.displayName ? profileData.displayName : '..');
+  settingsStorage.setItem('userPrincipalName', profileData.userPrincipalName ? profileData.userPrincipalName : '..');
 }

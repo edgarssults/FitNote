@@ -3,7 +3,7 @@ import { settingsStorage } from "settings";
 import { me } from "companion";
 import { getProfile } from "./logic/profile";
 import { getNotes, syncSelectedNote, syncQueuedNote } from "./logic/notes";
-import { setExpiry, getAccessToken, refreshAccessToken } from "./logic/oauth";
+import { setExpiry, getAccessToken, refreshAccessToken, checkAccessCode } from "./logic/oauth";
 
 // Reset the settings used to communicate with the settings page
 settingsStorage.removeItem('syncSelectedNote');
@@ -19,7 +19,9 @@ if (me.launchReasons.settingsChanged) {
 
   // User has requested a new access token
   if (settingExists('refreshAccessToken')) {
-    refreshAccessToken().then(getNotes);
+    refreshAccessToken()
+      .then(setExpiry)
+      .then(getNotes);
   }
 }
 
@@ -60,6 +62,7 @@ settingsStorage.onchange = evt => {
   console.log(`Setting changed: ${evt.key}\n${evt.oldValue}\n>>>\n${evt.newValue}`);
   
   // User has logged in
+  // This is the default handling
   if (evt.key === 'oauth' && evt.newValue) {
     setExpiry();
     getProfile();
@@ -74,14 +77,28 @@ settingsStorage.onchange = evt => {
   }
 
   // User has requested an access token
+  // This is our custom handling
   if (evt.key === 'oauth-response' && evt.newValue) {
-    getAccessToken().then(getProfile).then(getNotes);
+    checkAccessCode()
+      .then(() => {
+        console.log('Getting access token...');
+        getAccessToken()
+          .then(() => settingsStorage.setItem('oauth-loading', 'true'))
+          .then(setExpiry)
+          .then(getProfile)
+          .then(getNotes)
+          .then(() => settingsStorage.removeItem('oauth-loading'));
+      })
+      .then(() => settingsStorage.removeItem('oauth-loading'))
+      .catch(() => console.log('Not getting access token'));
     return;
   }
 
   // User has requested a new access token
   if (evt.key === 'refreshAccessToken' && evt.newValue) {
-    refreshAccessToken().then(getNotes);
+    refreshAccessToken()
+      .then(setExpiry)
+      .then(getNotes);
     return;
   }
 };

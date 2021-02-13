@@ -13,8 +13,11 @@ export function getNotes(): void {
     return;
   }
 
+  settingsStorage.setItem('notes-loading', 'true');
+
   getGraphJson('https://graph.microsoft.com/v1.0/me/onenote/pages?$select=id,title&$orderBy=lastModifiedDateTime%20desc', token)
     .then(response => setNotes(response))
+    .then(() => settingsStorage.removeItem('notes-loading'))
     .catch(error => console.error(error.message));
 }
 
@@ -49,10 +52,13 @@ export function syncSelectedNote(): void {
     return;
   }
 
+  settingsStorage.setItem('sync-loading', 'true');
+
   // Get the selected note's content
   let selectedNote = JSON.parse(selectedNoteSetting);
   getGraphText(`https://graph.microsoft.com/v1.0/me/onenote/pages/${selectedNote.values[0].value}/content`, token)
-    .then(response => sendToApp(response));
+    .then(response => sendToApp(response))
+    .then(() => settingsStorage.removeItem('sync-loading'));
 }
 
 /**
