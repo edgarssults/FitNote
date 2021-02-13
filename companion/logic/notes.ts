@@ -18,7 +18,10 @@ export function getNotes(): void {
   getGraphJson('https://graph.microsoft.com/v1.0/me/onenote/pages?$select=id,title&$orderBy=lastModifiedDateTime%20desc', token)
     .then(response => setNotes(response))
     .then(() => settingsStorage.removeItem('notes-loading'))
-    .catch(error => console.error(error.message));
+    .catch(error => {
+      settingsStorage.removeItem('notes-loading');
+      console.error(error.message);
+    });
 }
 
 /**
@@ -34,6 +37,8 @@ function setNotes(noteData: any): void {
  * Syncs the selected note with the watch.
  */
 export function syncSelectedNote(): void {
+  settingsStorage.setItem('sync-loading', 'true');
+
   // Reset the settings used to communicate with the settings page
   settingsStorage.removeItem('syncSelectedNote');
   settingsStorage.removeItem('syncError');
@@ -42,6 +47,7 @@ export function syncSelectedNote(): void {
   let token = getOAuthToken();
   if (!token) {
     console.error('syncSelectedNote: Could not get OAuth token!');
+    settingsStorage.removeItem('sync-loading');
     return;
   }
 
@@ -49,16 +55,19 @@ export function syncSelectedNote(): void {
   let selectedNoteSetting = settingsStorage.getItem('selectedNote');
   if (!selectedNoteSetting) {
     console.error('Could not find selectedNote setting!');
+    settingsStorage.removeItem('sync-loading');
     return;
   }
-
-  settingsStorage.setItem('sync-loading', 'true');
 
   // Get the selected note's content
   let selectedNote = JSON.parse(selectedNoteSetting);
   getGraphText(`https://graph.microsoft.com/v1.0/me/onenote/pages/${selectedNote.values[0].value}/content`, token)
     .then(response => sendToApp(response))
-    .then(() => settingsStorage.removeItem('sync-loading'));
+    .then(() => settingsStorage.removeItem('sync-loading'))
+    .catch(() => {
+      settingsStorage.removeItem('sync-loading');
+      setSyncError('Could not send note to watch!');
+    });
 }
 
 /**

@@ -31,7 +31,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
         {!settingExists(settingsStorage, 'oauth-loading') && settingExists(settingsStorage, 'oauthExpires') && !isAccessTokenValid(settingsStorage) &&
           <Button
             list
-            label="Refresh Access"
+            label="Refresh Access to Sync"
             onClick={() => initiateAccessTokenRefresh(settingsStorage)}
           />
         }
@@ -45,10 +45,10 @@ registerSettingsPage(({ settings, settingsStorage }) => {
             selectViewTitle="Select Note"
             options={getNotes(settingsStorage)}
           />
-          {settingExists(settingsStorage, 'selectedNoteSynced') &&
+          {!settingExists(settingsStorage, 'sync-loading') && settingExists(settingsStorage, 'selectedNoteSynced') &&
             <Text>Synced {getDateString(settingsStorage, 'selectedNoteSynced')}</Text>
           }
-          {settingExists(settingsStorage, 'syncError') &&
+          {!settingExists(settingsStorage, 'sync-loading') && settingExists(settingsStorage, 'syncError') &&
             <Text>Error: {settingsStorage.getItem('syncError')}</Text>
           }
           {settingExists(settingsStorage, 'sync-loading')
