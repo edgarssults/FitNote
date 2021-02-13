@@ -14,8 +14,9 @@ const loader = <GraphicsElement>document.getElementById("loader");
 // Load the synced note from file
 if (fs.existsSync(singleNoteFileName)) {
   console.log('Loading note from file...');
-  showLoader();
   hideIntro();
+  hideNote();
+  showLoader();
   let settings = fs.readFileSync(singleNoteFileName, 'json');
   displayNote(settings);
 }
@@ -32,8 +33,9 @@ peerSocket.onmessage = message => {
   }
 
   console.log('Loading note from message...');
-  showLoader();
   hideIntro();
+  hideNote();
+  showLoader();
   fs.writeFileSync(singleNoteFileName, message.data, 'json');
   displayNote(message.data);
 };
@@ -63,6 +65,9 @@ peerSocket.onclose = () => {
  * @param paragraphs Note.
  */
 function displayNote(paragraphs: string[]): void {
+  hideLoader();
+  showNote();
+
   // Set texts
   for (let i = 0; i < Math.min(paragraphs.length, maxParagraphCount); i++) {
     let paragraph = paragraphs[i];
@@ -84,8 +89,6 @@ function displayNote(paragraphs: string[]): void {
     }
   }
 
-  hideLoader();
-  showNote();
   console.log('Note loaded');
 }
 
@@ -100,14 +103,6 @@ function clearNote(): void {
   hideNote();
   showIntro();
 
-  for (let i = 0; i < maxParagraphCount; i++) {
-    let note = <GraphicsElement>document.getElementById(`note${i}`);
-    if (note) {
-      note.text = '';
-      note.style.visibility = 'hidden';
-    }
-  }
-
   fs.unlinkSync(singleNoteFileName);
 }
 
@@ -120,6 +115,14 @@ function showNote(): void {
 }
 
 function hideNote(): void {
+  for (let i = 0; i < maxParagraphCount; i++) {
+    let note = <GraphicsElement>document.getElementById(`note${i}`);
+    if (note) {
+      note.text = '';
+      note.style.visibility = 'hidden';
+    }
+  }
+
   if (scrollView && border) {
     border.style.visibility = 'hidden';
     scrollView.style.visibility = 'hidden';
