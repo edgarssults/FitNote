@@ -112,18 +112,18 @@ function getNotes(settingsStorage: LiveStorage): Array<any> {
 function getDateString(settingsStorage: LiveStorage, settingName: string): string {
   let dateSetting = settingsStorage.getItem(settingName);
   if (!dateSetting) {
-    return '[never]';
+    return '???';
   }
 
   return new Date(Number.parseInt(dateSetting)).toLocaleString();
 }
 
 /**
- * Resets everything (except whatever's synced to the watch).
+ * Resets everything.
  * @param settingsStorage Settings storage instance.
  */
 function clearSettingsStorage(settingsStorage: LiveStorage): void {
-  // TODO: Also reset watch data
+  settingsStorage.setItem('clearSyncedNote', 'true');
   settingsStorage.clear();
 }
 

@@ -9,10 +9,13 @@ const scrollView = <GraphicsElement>document.getElementById("sv");
 const border = <GraphicsElement>document.getElementById("border");
 const introImage = <GraphicsElement>document.getElementById("introImage");
 const introText = <GraphicsElement>document.getElementById("introText");
+const loader = <GraphicsElement>document.getElementById("loader");
 
 // Load the synced note from file
 if (fs.existsSync(singleNoteFileName)) {
   console.log('Loading note from file...');
+  showLoader();
+  hideIntro();
   let settings = fs.readFileSync(singleNoteFileName, 'json');
   displayNote(settings);
 }
@@ -22,7 +25,15 @@ if (fs.existsSync(singleNoteFileName)) {
  */
 peerSocket.onmessage = message => {
   console.log('Received message from companion');
+  if (message.data === 'clearSyncedNote') {
+    console.log('Clearing note...');
+    clearNote();
+    return;
+  }
+
   console.log('Loading note from message...');
+  showLoader();
+  hideIntro();
   fs.writeFileSync(singleNoteFileName, message.data, 'json');
   displayNote(message.data);
 };
@@ -52,19 +63,6 @@ peerSocket.onclose = () => {
  * @param paragraphs Note.
  */
 function displayNote(paragraphs: string[]): void {
-  // Hide intro image and text
-  if (introImage && introText) {
-    introImage.style.visibility = 'hidden';
-    introText.style.visibility = 'hidden';
-  }
-
-  // Scroll to top and show the paragraph list
-  if (scrollView && border) {
-    border.style.visibility = 'visible';
-    scrollView.style.visibility = 'visible';
-    scrollView.value = 0;
-  }
-  
   // Set texts
   for (let i = 0; i < Math.min(paragraphs.length, maxParagraphCount); i++) {
     let paragraph = paragraphs[i];
@@ -86,5 +84,70 @@ function displayNote(paragraphs: string[]): void {
     }
   }
 
+  hideLoader();
+  showNote();
   console.log('Note loaded');
+}
+
+/**
+ * Clears the currently synced note.
+ */
+function clearNote(): void {
+  if (!fs.existsSync(singleNoteFileName)) {
+    return;
+  }
+
+  hideNote();
+  showIntro();
+
+  for (let i = 0; i < maxParagraphCount; i++) {
+    let note = <GraphicsElement>document.getElementById(`note${i}`);
+    if (note) {
+      note.text = '';
+      note.style.visibility = 'hidden';
+    }
+  }
+
+  fs.unlinkSync(singleNoteFileName);
+}
+
+function showNote(): void {
+  if (scrollView && border) {
+    border.style.visibility = 'visible';
+    scrollView.style.visibility = 'visible';
+    scrollView.value = 0;
+  }
+}
+
+function hideNote(): void {
+  if (scrollView && border) {
+    border.style.visibility = 'hidden';
+    scrollView.style.visibility = 'hidden';
+  }
+}
+
+function showIntro(): void {
+  if (introImage && introText) {
+    introImage.style.visibility = 'visible';
+    introText.style.visibility = 'visible';
+  }
+}
+
+function hideIntro(): void {
+  if (introImage && introText) {
+    introImage.style.visibility = 'hidden';
+    introText.style.visibility = 'hidden';
+  }
+}
+
+function showLoader(): void {
+  if (loader) {
+    loader.style.visibility = "visible";
+  }
+}
+
+function hideLoader(): void {
+  if (loader) {
+    loader.style.visibility = "hidden";
+  }
 }

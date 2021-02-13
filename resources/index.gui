@@ -5,6 +5,8 @@
     </symbol>
   </defs>
 
+  <image id="loader" x="50%-64" y="50%-64" width="128" height="128" href="loader.png" visibility="hidden" />
+
   <image id="introImage" x="50%-40" y="40" width="80" height="80" href="icon.png" visibility="visible" />
   <use id="introText" y="140" href="#dynamic-textarea" visibility="visible">
     <set href="text" attributeName="text-buffer" to="Sync a note to the watch from the FitNote app settings on your phone." />

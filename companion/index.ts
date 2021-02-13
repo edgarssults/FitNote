@@ -53,6 +53,20 @@ settingsStorage.onchange = evt => {
     return;
   }
 
+  // User has reset setting and note should be reset too
+  if (evt.key === 'clearSyncedNote' && evt.newValue) {
+    settingsStorage.removeItem('clearSyncedNote');
+
+    // Send the gathered content to the watch
+    if (peerSocket.readyState === peerSocket.OPEN) {
+      peerSocket.send('clearSyncedNote');
+      console.log('Clear command sent to app');
+    } else if (peerSocket.readyState === peerSocket.CLOSED) {
+      settingsStorage.setItem('queuedNote', 'clearSyncedNote');
+      console.log('Clear command queued for sending to app');
+    }
+  }
+
   // User has requested an access token
   // This is our custom handling
   if (evt.key === 'oauth-response' && evt.newValue) {
