@@ -18,12 +18,40 @@ if (fs.existsSync(singleNoteFileName)) {
 }
 
 /**
+ * Message is received.
+ */
+peerSocket.onmessage = message => {
+  console.log('Received message from companion');
+  console.log('Loading note from message...');
+  fs.writeFileSync(singleNoteFileName, message.data, 'json');
+  displayNote(message.data);
+};
+
+/**
+ * Message socket opens.
+ */
+peerSocket.onopen = () => {
+  console.log("Socket Open");
+
+  // Request a queued note from the companion
+  console.log('Checking for queued notes...');
+  peerSocket.send({
+    type: 'QueuedMessageRequest'
+  });
+};
+
+/**
+ * Message socket closes.
+ */
+peerSocket.onclose = () => {
+  console.log("Socket Closed");
+};
+
+/**
  * Displays the note.
  * @param paragraphs Note.
  */
 function displayNote(paragraphs: string[]): void {
-  // TODO: Add a loader?
-
   // Hide intro image and text
   if (introImage && introText) {
     introImage.style.visibility = 'hidden';
@@ -60,33 +88,3 @@ function displayNote(paragraphs: string[]): void {
 
   console.log('Note loaded');
 }
-
-/**
- * Message is received.
- */
-peerSocket.onmessage = message => {
-  console.log('Received message from companion');
-  console.log('Loading note from message...');
-  fs.writeFileSync(singleNoteFileName, message.data, 'json');
-  displayNote(message.data);
-};
-
-/**
- * Message socket opens.
- */
-peerSocket.onopen = () => {
-  console.log("Socket Open");
-
-  // Request a queued note from the companion
-  console.log('Checking for queued notes...');
-  peerSocket.send({
-    type: 'QueuedMessageRequest'
-  });
-};
-
-/**
- * Message socket closes.
- */
-peerSocket.onclose = () => {
-  console.log("Socket Closed");
-};
