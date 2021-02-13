@@ -3,7 +3,7 @@ import { settingsStorage } from "settings";
 let previousCode: string = "EMPTY";
 
 /**
- * Gets the OAuth data from settings.
+ * Gets the OAuth token data from settings.
  */
 function GetOAuthData(): any {
   let oauthSetting = settingsStorage.getItem('oauth');
@@ -17,7 +17,7 @@ function GetOAuthData(): any {
 }
 
 /**
- * TODO
+ * Gets the OAuth button response data from settings.
  */
 function GetOAuthResponseData(): any {
   let oauthSetting = settingsStorage.getItem('oauth-response');
@@ -52,7 +52,7 @@ export function setExpiry(): void {
 }
 
 /**
- * TODO
+ * Gets the initial MS Graph API access token.
  */
 export function getAccessToken(): Promise<void> {
   let oauth = GetOAuthResponseData();
@@ -64,7 +64,7 @@ export function getAccessToken(): Promise<void> {
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
       body: `client_id=98d88e94-97a8-42dc-a692-cdcb8f79a9f3
-      &scope=${encodeURI('openid profile User.Read Notes.Read')}
+      &scope=${encodeURI('openid profile User.Read Notes.Read offline_access')}
       &redirect_uri=${encodeURI('https://app-settings.fitbitdevelopercontent.com/simple-redirect.html')}
       &grant_type=authorization_code
       &state=${oauth.state}
@@ -95,7 +95,7 @@ export function refreshAccessToken(): Promise<void> {
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
       body: `client_id=98d88e94-97a8-42dc-a692-cdcb8f79a9f3
-      &scope=${encodeURI(oauth.scope)}
+      &scope=${encodeURI('openid profile User.Read Notes.Read offline_access')}
       &refresh_token=${oauth.refresh_token}
       &redirect_uri=${encodeURI('https://app-settings.fitbitdevelopercontent.com/simple-redirect.html')}
       &grant_type=refresh_token`

@@ -19,36 +19,13 @@ if (me.launchReasons.settingsChanged) {
 
   // User has requested a new access token
   if (settingExists('refreshAccessToken')) {
+    settingsStorage.setItem('oauth-loading', 'true');
     refreshAccessToken()
       .then(setExpiry)
+      .then(() => settingsStorage.removeItem('oauth-loading'))
       .then(getNotes);
   }
 }
-
-/**
- * Message is received.
- */
-peerSocket.onmessage = message => {
-  console.log('Received message from app');
-  if (message.data.type === 'QueuedMessageRequest') {
-    console.log('Checking for queued notes...');
-    syncQueuedNote();
-  }
-};
-
-/**
- * Message socket opens.
- */
-peerSocket.onopen = () => {
-  console.log("Socket Open");
-};
-
-/**
- * Message socket closes.
- */
-peerSocket.onclose = () => {
-  console.log("Socket Closed");
-};
 
 /**
  * A user changes a setting.
@@ -79,28 +56,57 @@ settingsStorage.onchange = evt => {
   // User has requested an access token
   // This is our custom handling
   if (evt.key === 'oauth-response' && evt.newValue) {
+    settingsStorage.setItem('oauth-loading', 'true');
     checkAccessCode()
       .then(() => {
         console.log('Getting access token...');
         getAccessToken()
-          .then(() => settingsStorage.setItem('oauth-loading', 'true'))
           .then(setExpiry)
           .then(getProfile)
-          .then(getNotes)
-          .then(() => settingsStorage.removeItem('oauth-loading'));
+          .then(() => settingsStorage.removeItem('oauth-loading'))
+          .then(getNotes);
       })
-      .then(() => settingsStorage.removeItem('oauth-loading'))
-      .catch(() => console.log('Not getting access token'));
+      .catch(() => {
+        console.log('Not getting access token');
+        settingsStorage.removeItem('oauth-loading')
+      });
     return;
   }
 
   // User has requested a new access token
   if (evt.key === 'refreshAccessToken' && evt.newValue) {
+    settingsStorage.setItem('oauth-loading', 'true');
     refreshAccessToken()
       .then(setExpiry)
+      .then(() => settingsStorage.removeItem('oauth-loading'))
       .then(getNotes);
     return;
   }
+};
+
+/**
+ * Message is received.
+ */
+peerSocket.onmessage = message => {
+  console.log('Received message from app');
+  if (message.data.type === 'QueuedMessageRequest') {
+    console.log('Checking for queued notes...');
+    syncQueuedNote();
+  }
+};
+
+/**
+ * Message socket opens.
+ */
+peerSocket.onopen = () => {
+  console.log("Socket Open");
+};
+
+/**
+ * Message socket closes.
+ */
+peerSocket.onclose = () => {
+  console.log("Socket Closed");
 };
 
 /**

@@ -17,15 +17,11 @@ registerSettingsPage(({ settings, settingsStorage }) => {
                 requestTokenUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
                 clientId="98d88e94-97a8-42dc-a692-cdcb8f79a9f3"
                 clientSecret=""
-                scope="openid profile User.Read Notes.Read"
+                scope="openid profile User.Read Notes.Read offline_access"
                 description="Please log in with your Microsoft account to see your notes"
-                onReturn={async (response) => {
-                  console.log('onReturn: ' + JSON.stringify(response));
-                  settingsStorage.setItem('oauth-response', JSON.stringify(response));
-                }}
+                onReturn={async (response) => initiateAccessTokenRetrieval(settingsStorage, response)}
                 onAccessToken={async (response) => {
-                  console.log('onAccessToken: ' + JSON.stringify(response));
-
+                  console.warn('onAccessToken should not have been called');
                 }}
               />
           }
@@ -41,7 +37,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
         }
       </Section>
       
-      {isAccessTokenValid(settingsStorage) && settingExists(settingsStorage, 'notes') &&
+      {!settingExists(settingsStorage, 'oauth-loading') && !settingExists(settingsStorage, 'notes-loading') && isAccessTokenValid(settingsStorage) && settingExists(settingsStorage, 'notes') &&
         <Section title={<Text bold align="center">Notes</Text>}>
           <Select
             label={`Select a note to sync`}
@@ -145,6 +141,15 @@ function initiateNoteSync(settingsStorage: LiveStorage): void {
  */
 function initiateAccessTokenRefresh(settingsStorage: LiveStorage): void {
   settingsStorage.setItem('refreshAccessToken', 'true');
+}
+
+/**
+ * Initiates access token retrieval.
+ * @param settingsStorage Settings storage instance.
+ * @param response OAuth button response.
+ */
+function initiateAccessTokenRetrieval(settingsStorage: LiveStorage, response: any): void {
+  settingsStorage.setItem('oauth-response', JSON.stringify(response));
 }
 
 /**
