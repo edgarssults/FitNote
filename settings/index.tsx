@@ -55,7 +55,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
 
       {settingExists(settingsStorage, 'notes-loading') &&
         <Section title={<Text bold align="center">Notes</Text>}>
-          <TextImageRow icon={loader} />
+          <TextImageRow icon={loader} label="Loading notes..." />
         </Section>
       }
       
