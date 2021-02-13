@@ -3,7 +3,7 @@ import { settingsStorage } from "settings";
 import { me } from "companion";
 import { getProfile } from "./logic/profile";
 import { getNotes, syncSelectedNote, syncQueuedNote } from "./logic/notes";
-import { setExpiry, getAccessToken, refreshAccessToken, checkAccessCode } from "./logic/oauth";
+import { setExpiry, getAccessToken, refreshAccessToken, checkAccessCode, isAccessTokenValid } from "./logic/oauth";
 
 // Reset the settings used to communicate with the settings page
 settingsStorage.removeItem('syncSelectedNote');
@@ -49,7 +49,16 @@ settingsStorage.onchange = evt => {
   
   // User has changed the selected note or wants to sync it again
   if ((evt.key === 'selectedNote' || evt.key === 'syncSelectedNote') && evt.newValue) {
-    syncSelectedNote();
+    if (!isAccessTokenValid()) {
+      settingsStorage.setItem('oauth-loading', 'true');
+      refreshAccessToken()
+        .then(setExpiry)
+        .then(() => settingsStorage.removeItem('oauth-loading'))
+        .then(getNotes)
+        .then(syncSelectedNote);
+    } else {
+      syncSelectedNote();
+    }
     return;
   }
 

@@ -38,7 +38,7 @@ function setNotes(noteData: any): void {
  */
 export function syncSelectedNote(): void {
   settingsStorage.setItem('sync-loading', 'true');
-
+  
   // Reset the settings used to communicate with the settings page
   settingsStorage.removeItem('syncSelectedNote');
   settingsStorage.removeItem('syncError');

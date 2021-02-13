@@ -5,39 +5,29 @@ registerSettingsPage(({ settings, settingsStorage }) => {
   return (
     <Page>
       <Section title={<Text bold align="center">Account</Text>}>
-          {settingExists(settingsStorage, 'oauth')
-            ? settingExists(settingsStorage, 'oauth-loading')
-              ? <TextImageRow icon={loader} />
-              : <Text>Logged in as {getNames(settingsStorage)})</Text>
-            : <Oauth
-                title="Microsoft Account Login"
-                label="Microsoft Account"
-                status="Login"
-                authorizeUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize"
-                requestTokenUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
-                clientId="98d88e94-97a8-42dc-a692-cdcb8f79a9f3"
-                clientSecret=""
-                scope="openid profile User.Read Notes.Read offline_access"
-                description="Please log in with your Microsoft account to see your notes"
-                onReturn={async (response) => initiateAccessTokenRetrieval(settingsStorage, response)}
-                onAccessToken={async (response) => {
-                  console.warn('onAccessToken should not have been called');
-                }}
-              />
-          }
-        {!settingExists(settingsStorage, 'oauth-loading') && settingExists(settingsStorage, 'oauthExpires') &&
-          <Text>Expires {getDateString(settingsStorage, 'oauthExpires')}</Text>
-        }
-        {!settingExists(settingsStorage, 'oauth-loading') && settingExists(settingsStorage, 'oauthExpires') && !isAccessTokenValid(settingsStorage) &&
-          <Button
-            list
-            label="Refresh Access to Sync"
-            onClick={() => initiateAccessTokenRefresh(settingsStorage)}
-          />
+        {settingExists(settingsStorage, 'oauth')
+          ? settingExists(settingsStorage, 'oauth-loading')
+            ? <TextImageRow icon={loader} label="Logging in..." />
+            : <Text>Logged in as {getNames(settingsStorage)})</Text>
+          : <Oauth
+              title="Microsoft Account Login"
+              label="Microsoft Account"
+              status="Login"
+              authorizeUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize"
+              requestTokenUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
+              clientId="98d88e94-97a8-42dc-a692-cdcb8f79a9f3"
+              clientSecret=""
+              scope="openid profile User.Read Notes.Read offline_access"
+              description="Please log in with your Microsoft account to see your notes"
+              onReturn={async (response) => initiateAccessTokenRetrieval(settingsStorage, response)}
+              onAccessToken={async (response) => {
+                console.warn('onAccessToken should not have been called');
+              }}
+            />
         }
       </Section>
       
-      {!settingExists(settingsStorage, 'oauth-loading') && !settingExists(settingsStorage, 'notes-loading') && isAccessTokenValid(settingsStorage) && settingExists(settingsStorage, 'notes') &&
+      {!settingExists(settingsStorage, 'oauth-loading') && !settingExists(settingsStorage, 'notes-loading') && settingExists(settingsStorage, 'notes') &&
         <Section title={<Text bold align="center">Notes</Text>}>
           <Select
             label={`Select a note to sync`}
@@ -52,7 +42,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
             <Text>Error: {settingsStorage.getItem('syncError')}</Text>
           }
           {settingExists(settingsStorage, 'sync-loading')
-             ? <TextImageRow icon={loader} />
+             ? <TextImageRow icon={loader} label="Synchronising..." />
              : settingExists(settingsStorage, 'selectedNote') &&
               <Button
                 list
@@ -150,24 +140,6 @@ function initiateAccessTokenRefresh(settingsStorage: LiveStorage): void {
  */
 function initiateAccessTokenRetrieval(settingsStorage: LiveStorage, response: any): void {
   settingsStorage.setItem('oauth-response', JSON.stringify(response));
-}
-
-/**
- * Determines whether the access token is valid.
- * @param settingsStorage Settings storage instance.
- */
-function isAccessTokenValid(settingsStorage: LiveStorage): boolean {
-  let expirySetting = settingsStorage.getItem('oauthExpires');
-  if (!expirySetting) {
-    return false;
-  }
-
-  let expiry = parseInt(expirySetting);
-  if (expiry <= Date.now()) {
-    return false;
-  }
-
-  return true;
 }
 
 /**

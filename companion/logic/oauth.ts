@@ -3,38 +3,10 @@ import { settingsStorage } from "settings";
 let previousCode: string = "EMPTY";
 
 /**
- * Gets the OAuth token data from settings.
- */
-function GetOAuthData(): any {
-  let oauthSetting = settingsStorage.getItem('oauth');
-  if (!oauthSetting) {
-    console.error('Could not find oauth setting!');
-    return null;
-  }
-
-  let oauth = JSON.parse(oauthSetting);
-  return oauth;
-}
-
-/**
- * Gets the OAuth button response data from settings.
- */
-function GetOAuthResponseData(): any {
-  let oauthSetting = settingsStorage.getItem('oauth-response');
-  if (!oauthSetting) {
-    console.error('Could not find oauth-response setting!');
-    return null;
-  }
-
-  let oauth = JSON.parse(oauthSetting);
-  return oauth;
-}
-
-/**
  * Gets the OAuth token from settings.
  */
 export function getOAuthToken(): string | null {
-  let oauth = GetOAuthData();
+  let oauth = getOAuthData();
   return oauth.access_token;
 }
 
@@ -42,7 +14,7 @@ export function getOAuthToken(): string | null {
  * Sets the token expiry time in settings.
  */
 export function setExpiry(): void {
-  let oauth = GetOAuthData();
+  let oauth = getOAuthData();
   let lifeSeconds = oauth.expires_in;
 
   // Calculate expiry time (milliseconds since January 1, 1970 00:00:00 UTC)
@@ -55,7 +27,7 @@ export function setExpiry(): void {
  * Gets the initial MS Graph API access token.
  */
 export function getAccessToken(): Promise<void> {
-  let oauth = GetOAuthResponseData();
+  let oauth = getOAuthResponseData();
   settingsStorage.removeItem('oauth-response');
 
   const options = {
@@ -87,7 +59,7 @@ export function getAccessToken(): Promise<void> {
 export function refreshAccessToken(): Promise<void> {
   settingsStorage.removeItem('refreshAccessToken');
 
-  let oauth = GetOAuthData();
+  let oauth = getOAuthData();
 
   const options = {
       method: 'POST',
@@ -109,6 +81,9 @@ export function refreshAccessToken(): Promise<void> {
     .catch(error => console.error(error.message));
 }
 
+/**
+ * Checks whether the accesss code is valid and resolves if it is, otherwise rejects.
+ */
 export function checkAccessCode(): Promise<void> {
   console.log('Checking access code...');
 
@@ -130,4 +105,49 @@ export function checkAccessCode(): Promise<void> {
 
   console.log('Resolving access code because it needs to be retrieved');
   return Promise.resolve();
+}
+
+/**
+ * Determines whether the access token is valid.
+ */
+export function isAccessTokenValid(): boolean {
+  let expirySetting = settingsStorage.getItem('oauthExpires');
+  if (!expirySetting) {
+    return false;
+  }
+
+  let expiry = parseInt(expirySetting);
+  if (expiry <= Date.now()) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Gets the OAuth token data from settings.
+ */
+function getOAuthData(): any {
+  let oauthSetting = settingsStorage.getItem('oauth');
+  if (!oauthSetting) {
+    console.error('Could not find oauth setting!');
+    return null;
+  }
+
+  let oauth = JSON.parse(oauthSetting);
+  return oauth;
+}
+
+/**
+ * Gets the OAuth button response data from settings.
+ */
+function getOAuthResponseData(): any {
+  let oauthSetting = settingsStorage.getItem('oauth-response');
+  if (!oauthSetting) {
+    console.error('Could not find oauth-response setting!');
+    return null;
+  }
+
+  let oauth = JSON.parse(oauthSetting);
+  return oauth;
 }
