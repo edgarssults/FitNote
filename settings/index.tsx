@@ -20,7 +20,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
               scope="openid profile User.Read Notes.Read offline_access"
               description="Please log in with your Microsoft account to see your notes"
               onReturn={async (response) => initiateAccessTokenRetrieval(settingsStorage, response)}
-              onAccessToken={async (response) => {
+              onAccessToken={async () => {
                 console.warn('onAccessToken should not have been called');
               }}
             />
@@ -123,14 +123,6 @@ function clearSettingsStorage(settingsStorage: LiveStorage): void {
  */
 function initiateNoteSync(settingsStorage: LiveStorage): void {
   settingsStorage.setItem('syncSelectedNote', 'true');
-}
-
-/**
- * Initiates access token refresh.
- * @param settingsStorage Settings storage instance.
- */
-function initiateAccessTokenRefresh(settingsStorage: LiveStorage): void {
-  settingsStorage.setItem('refreshAccessToken', 'true');
 }
 
 /**

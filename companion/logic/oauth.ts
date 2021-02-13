@@ -57,8 +57,6 @@ export function getAccessToken(): Promise<void> {
  * Refreshes the MS Graph API access token.
  */
 export function refreshAccessToken(): Promise<void> {
-  settingsStorage.removeItem('refreshAccessToken');
-
   let oauth = getOAuthData();
 
   const options = {

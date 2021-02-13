@@ -2,28 +2,33 @@ import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 import { me } from "companion";
 import { getProfile } from "./logic/profile";
-import { getNotes, syncSelectedNote, syncQueuedNote } from "./logic/notes";
+import { getNotes, syncSelectedNote, syncQueuedNote, clearSyncedNote } from "./logic/notes";
 import { setExpiry, getAccessToken, refreshAccessToken, checkAccessCode, isAccessTokenValid } from "./logic/oauth";
 
 // Reset the settings used to communicate with the settings page
 settingsStorage.removeItem('syncSelectedNote');
-settingsStorage.removeItem('refreshAccessToken');
 
 if (me.launchReasons.settingsChanged) {
   console.warn('Settings were changed while companion was not running...');
 
   // User has changed the selected note or wants to sync it again
   if (settingExists('syncSelectedNote') || settingExists('selectedNote')) {
-    syncSelectedNote();
+    checkTokenAndSync();
   }
 
-  // User has requested a new access token
-  if (settingExists('refreshAccessToken')) {
-    settingsStorage.setItem('oauth-loading', 'true');
-    refreshAccessToken()
-      .then(setExpiry)
-      .then(() => settingsStorage.removeItem('oauth-loading'))
-      .then(getNotes);
+  // User has reset setting and note should be reset too
+  if (settingExists('clearSyncedNote')) {
+    clearSyncedNote();
+  }
+
+  // User has logged in
+  if (settingExists('oauth')) {
+    getApiData();
+  }
+
+  // User has requested an access token
+  if (settingExists('oauth-response')) {
+    getTokenAndApiData();
   }
 }
 
@@ -41,68 +46,25 @@ settingsStorage.onchange = evt => {
   // User has logged in
   // This is the default handling
   if (evt.key === 'oauth' && evt.newValue) {
-    setExpiry();
-    getProfile();
-    getNotes();
+    getApiData();
     return;
   }
   
   // User has changed the selected note or wants to sync it again
-  if ((evt.key === 'selectedNote' || evt.key === 'syncSelectedNote') && evt.newValue) {
-    if (!isAccessTokenValid()) {
-      settingsStorage.setItem('oauth-loading', 'true');
-      refreshAccessToken()
-        .then(setExpiry)
-        .then(() => settingsStorage.removeItem('oauth-loading'))
-        .then(getNotes)
-        .then(syncSelectedNote);
-    } else {
-      syncSelectedNote();
-    }
+  if ((evt.key === 'syncSelectedNote'|| evt.key === 'selectedNote') && evt.newValue) {
+    checkTokenAndSync();
     return;
   }
 
   // User has reset setting and note should be reset too
   if (evt.key === 'clearSyncedNote' && evt.newValue) {
-    settingsStorage.removeItem('clearSyncedNote');
-
-    // Send the gathered content to the watch
-    if (peerSocket.readyState === peerSocket.OPEN) {
-      peerSocket.send('clearSyncedNote');
-      console.log('Clear command sent to app');
-    } else if (peerSocket.readyState === peerSocket.CLOSED) {
-      settingsStorage.setItem('queuedNote', 'clearSyncedNote');
-      console.log('Clear command queued for sending to app');
-    }
+    clearSyncedNote();
   }
 
   // User has requested an access token
   // This is our custom handling
   if (evt.key === 'oauth-response' && evt.newValue) {
-    settingsStorage.setItem('oauth-loading', 'true');
-    checkAccessCode()
-      .then(() => {
-        console.log('Getting access token...');
-        getAccessToken()
-          .then(setExpiry)
-          .then(getProfile)
-          .then(() => settingsStorage.removeItem('oauth-loading'))
-          .then(getNotes);
-      })
-      .catch(() => {
-        console.log('Not getting access token');
-        settingsStorage.removeItem('oauth-loading')
-      });
-    return;
-  }
-
-  // User has requested a new access token
-  if (evt.key === 'refreshAccessToken' && evt.newValue) {
-    settingsStorage.setItem('oauth-loading', 'true');
-    refreshAccessToken()
-      .then(setExpiry)
-      .then(() => settingsStorage.removeItem('oauth-loading'))
-      .then(getNotes);
+    getTokenAndApiData();
     return;
   }
 };
@@ -144,4 +106,49 @@ function settingExists(settingName: string): boolean {
   }
   
   return setting.length > 0;
+}
+
+/**
+ * Checks/gets the access token and syncs the selected note.
+ */
+function checkTokenAndSync() {
+  if (!isAccessTokenValid()) {
+    settingsStorage.setItem('oauth-loading', 'true');
+    refreshAccessToken()
+      .then(setExpiry)
+      .then(() => settingsStorage.removeItem('oauth-loading'))
+      .then(getNotes)
+      .then(syncSelectedNote);
+  } else {
+    syncSelectedNote();
+  }
+}
+
+/**
+ * Gets data that is available from the Graph API.
+ */
+function getApiData() {
+  setExpiry();
+  getProfile();
+  getNotes();
+}
+
+/**
+ * Gets the access token and gets data that is available from the Graph API.
+ */
+function getTokenAndApiData() {
+  settingsStorage.setItem('oauth-loading', 'true');
+  checkAccessCode()
+    .then(() => {
+      console.log('Getting access token...');
+      getAccessToken()
+        .then(setExpiry)
+        .then(getProfile)
+        .then(() => settingsStorage.removeItem('oauth-loading'))
+        .then(getNotes);
+    })
+    .catch(() => {
+      console.log('Not getting access token');
+      settingsStorage.removeItem('oauth-loading')
+    });
 }

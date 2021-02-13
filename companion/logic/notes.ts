@@ -38,7 +38,7 @@ function setNotes(noteData: any): void {
  */
 export function syncSelectedNote(): void {
   settingsStorage.setItem('sync-loading', 'true');
-  
+
   // Reset the settings used to communicate with the settings page
   settingsStorage.removeItem('syncSelectedNote');
   settingsStorage.removeItem('syncError');
@@ -68,6 +68,22 @@ export function syncSelectedNote(): void {
       settingsStorage.removeItem('sync-loading');
       setSyncError('Could not send note to watch!');
     });
+}
+
+/**
+ * Clears the synced note from the watch.
+ */
+export function clearSyncedNote(): void {
+  settingsStorage.removeItem('clearSyncedNote');
+
+    // Send the gathered content to the watch
+    if (peerSocket.readyState === peerSocket.OPEN) {
+      peerSocket.send('clearSyncedNote');
+      console.log('Clear command sent to app');
+    } else if (peerSocket.readyState === peerSocket.CLOSED) {
+      settingsStorage.setItem('queuedNote', 'clearSyncedNote');
+      console.log('Clear command queued for sending to app');
+    }
 }
 
 /**
