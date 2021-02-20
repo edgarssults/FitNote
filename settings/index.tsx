@@ -5,10 +5,10 @@ registerSettingsPage(({ settings, settingsStorage }) => {
   return (
     <Page>
       <Section title={<Text bold align="center">Account</Text>}>
-        {settingExists(settingsStorage, 'oauth')
-          ? settingExists(settingsStorage, 'oauth-loading')
-            ? <TextImageRow icon={loader} label="Logging in..." />
-            : <Text>Logged in as {getNames(settingsStorage)})</Text>
+        {isLoggedIn(settingsStorage)
+          ? isLoggingIn(settingsStorage)
+            ? <Loader message="Logging in..." />
+            : <Text>Logged in as {settingExists(settingsStorage, 'displayName') && settingExists(settingsStorage, 'userPrincipalName') ? `${settingsStorage.getItem('displayName')} (${settingsStorage.getItem('userPrincipalName')}` : '..'})</Text>
           : <Oauth
               title="Microsoft Account Login"
               label="Microsoft Account"
@@ -27,23 +27,28 @@ registerSettingsPage(({ settings, settingsStorage }) => {
         }
       </Section>
       
-      {!settingExists(settingsStorage, 'oauth-loading') && !settingExists(settingsStorage, 'notes-loading') && settingExists(settingsStorage, 'notes') &&
+      {isLoggedIn(settingsStorage) && !isLoggingIn(settingsStorage) &&
         <Section title={<Text bold align="center">Notes</Text>}>
-          <Select
-            label={`Select a note to sync`}
-            settingsKey="selectedNote"
-            selectViewTitle="Select Note"
-            options={getNotes(settingsStorage)}
-          />
-          {!settingExists(settingsStorage, 'sync-loading') && settingExists(settingsStorage, 'selectedNoteSynced') &&
+          {areNotesLoading(settingsStorage)
+              ? <Loader message="Loading notes..." />
+              : areNotesLoaded(settingsStorage)
+                ? <Select
+                    label={`Select a note to sync`}
+                    settingsKey="selectedNote"
+                    selectViewTitle="Select Note"
+                    options={getNotes(settingsStorage)}
+                  />
+                : <Text>No notes found or there was an error loading them</Text>
+          }
+          {!isNoteSynchronizing(settingsStorage) && isNoteSynchronized(settingsStorage) &&
             <Text>Synced {getDateString(settingsStorage, 'selectedNoteSynced')}</Text>
           }
-          {!settingExists(settingsStorage, 'sync-loading') && settingExists(settingsStorage, 'syncError') &&
+          {!isNoteSynchronizing(settingsStorage) && hasSyncFailed(settingsStorage) &&
             <Text>Error: {settingsStorage.getItem('syncError')}</Text>
           }
-          {settingExists(settingsStorage, 'sync-loading')
-             ? <TextImageRow icon={loader} label="Synchronising..." />
-             : settingExists(settingsStorage, 'selectedNote') &&
+          {isNoteSynchronizing(settingsStorage)
+            ? <Loader message="Synchronising note..." />
+            : settingExists(settingsStorage, 'selectedNote') &&
               <Button
                 list
                 label="Sync Again"
@@ -52,13 +57,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
           }
         </Section>
       }
-
-      {settingExists(settingsStorage, 'notes-loading') &&
-        <Section title={<Text bold align="center">Notes</Text>}>
-          <TextImageRow icon={loader} label="Loading notes..." />
-        </Section>
-      }
-      
+        
       <Section title={<Text bold align="center">Reset</Text>}>
         <Button
           list
@@ -134,14 +133,36 @@ function initiateAccessTokenRetrieval(settingsStorage: LiveStorage, response: an
   settingsStorage.setItem('oauth-response', JSON.stringify(response));
 }
 
-/**
- * Gets a logged in name string to display to the user.
- * @param settingsStorage Settings storage instance.
- */
-function getNames(settingsStorage: LiveStorage): string {
-  if (settingExists(settingsStorage, 'displayName') && settingExists(settingsStorage, 'userPrincipalName')) {
-    return `${settingsStorage.getItem('displayName')} (${settingsStorage.getItem('userPrincipalName')}`;
-  } else {
-    return '..';
-  }
+function isLoggingIn(settingsStorage: LiveStorage): boolean {
+  return settingExists(settingsStorage, 'oauth-loading');
+}
+
+function isLoggedIn(settingsStorage: LiveStorage): boolean {
+  return settingExists(settingsStorage, 'oauth');
+}
+
+function areNotesLoading(settingsStorage: LiveStorage): boolean {
+  return settingExists(settingsStorage, 'notes-loading');
+}
+
+function areNotesLoaded(settingsStorage: LiveStorage): boolean {
+  return settingExists(settingsStorage, 'notes');
+}
+
+function isNoteSynchronizing(settingsStorage: LiveStorage): boolean {
+  return settingExists(settingsStorage, 'sync-loading');
+}
+
+function isNoteSynchronized(settingsStorage: LiveStorage): boolean {
+  return settingExists(settingsStorage, 'selectedNoteSynced');
+}
+
+function hasSyncFailed(settingsStorage: LiveStorage): boolean {
+  return settingExists(settingsStorage, 'syncError');
+}
+
+function Loader(props) {
+  return (
+    <TextImageRow icon={loader} label={props.message} />
+  );
 }
