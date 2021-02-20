@@ -40,14 +40,14 @@ registerSettingsPage(({ settings, settingsStorage }) => {
                   />
                 : <Text>No notes found or there was an error loading them</Text>
           }
-          {!isNoteSynchronizing(settingsStorage) && isNoteSynchronized(settingsStorage) &&
+          {!isNoteSyncing(settingsStorage) && isNoteSynced(settingsStorage) &&
             <Text>Synced {getDateString(settingsStorage, 'selectedNoteSynced')}</Text>
           }
-          {!isNoteSynchronizing(settingsStorage) && hasSyncFailed(settingsStorage) &&
+          {!isNoteSyncing(settingsStorage) && hasSyncFailed(settingsStorage) &&
             <Text>Error: {settingsStorage.getItem('syncError')}</Text>
           }
-          {isNoteSynchronizing(settingsStorage)
-            ? <Loader message="Synchronising note..." />
+          {isNoteSyncing(settingsStorage)
+            ? <Loader message="Syncing note..." />
             : isNoteSelected(settingsStorage) &&
               <Button
                 list
@@ -164,11 +164,11 @@ function areNotesLoaded(settingsStorage: LiveStorage): boolean {
   return settingExists(settingsStorage, 'notes');
 }
 
-function isNoteSynchronizing(settingsStorage: LiveStorage): boolean {
+function isNoteSyncing(settingsStorage: LiveStorage): boolean {
   return settingExists(settingsStorage, 'sync-loading');
 }
 
-function isNoteSynchronized(settingsStorage: LiveStorage): boolean {
+function isNoteSynced(settingsStorage: LiveStorage): boolean {
   return settingExists(settingsStorage, 'selectedNoteSynced');
 }
 

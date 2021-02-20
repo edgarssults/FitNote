@@ -164,9 +164,11 @@ function getTokenAndApiData() {
 }
 
 function refreshNotes() {
+  settingsStorage.setItem('notes-loading', 'true');
   settingsStorage.removeItem('refreshNotes');
   settingsStorage.removeItem('selectedNote');
   settingsStorage.removeItem('syncError');
+  settingsStorage.removeItem('notes');
 
   if (!isAccessTokenValid()) {
     settingsStorage.setItem('oauth-loading', 'true');
