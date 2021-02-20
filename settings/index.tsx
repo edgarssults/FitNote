@@ -58,7 +58,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
           {!areNotesLoading(settingsStorage) &&
             <Button
               list
-              label="Refresh notes"
+              label="Refresh Notes"
               onClick={() => initiateNoteRefresh(settingsStorage)}
             />
           }
