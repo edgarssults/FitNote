@@ -48,12 +48,19 @@ registerSettingsPage(({ settings, settingsStorage }) => {
           }
           {isNoteSynchronizing(settingsStorage)
             ? <Loader message="Synchronising note..." />
-            : settingExists(settingsStorage, 'selectedNote') &&
+            : isNoteSelected(settingsStorage) &&
               <Button
                 list
                 label="Sync Again"
                 onClick={() => initiateNoteSync(settingsStorage)}
               />
+          }
+          {!areNotesLoading(settingsStorage) &&
+            <Button
+              list
+              label="Refresh notes"
+              onClick={() => initiateNoteRefresh(settingsStorage)}
+            />
           }
         </Section>
       }
@@ -117,11 +124,19 @@ function clearSettingsStorage(settingsStorage: LiveStorage): void {
 }
 
 /**
- * Initiates selected note syncing.
+ * Initiates selected note syncing to the device.
  * @param settingsStorage Settings storage instance.
  */
 function initiateNoteSync(settingsStorage: LiveStorage): void {
   settingsStorage.setItem('syncSelectedNote', 'true');
+}
+
+/**
+ * Initiates note list refresh.
+ * @param settingsStorage Settings storage instance.
+ */
+function initiateNoteRefresh(settingsStorage: LiveStorage): void {
+  settingsStorage.setItem('refreshNotes', 'true');
 }
 
 /**
@@ -159,6 +174,10 @@ function isNoteSynchronized(settingsStorage: LiveStorage): boolean {
 
 function hasSyncFailed(settingsStorage: LiveStorage): boolean {
   return settingExists(settingsStorage, 'syncError');
+}
+
+function isNoteSelected(settingsStorage: LiveStorage) : boolean {
+  return settingExists(settingsStorage, 'selectedNote');
 }
 
 function Loader(props) {

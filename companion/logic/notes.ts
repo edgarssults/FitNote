@@ -30,6 +30,7 @@ export function getNotes(): void {
  */
 function setNotes(noteData: any): void {
   let notes = noteData.value.map((n: { title: string; id: string; }) => ({ name: n.title, value: n.id }));
+  //throw 'test error';
   settingsStorage.setItem('notes', JSON.stringify(notes));
 }
 

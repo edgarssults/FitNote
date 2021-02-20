@@ -13,12 +13,17 @@ if (me.launchReasons.settingsChanged) {
 
   // User has changed the selected note or wants to sync it again
   if (settingExists('syncSelectedNote') || settingExists('selectedNote')) {
-    checkTokenAndSync();
+    syncNote();
   }
 
   // User has reset setting and note should be reset too
   if (settingExists('clearSyncedNote')) {
     clearSyncedNote();
+  }
+
+  // User wants to refresh the note list
+  if (settingExists('refreshNotes')) {
+    refreshNotes();
   }
 
   // User has logged in
@@ -52,13 +57,18 @@ settingsStorage.onchange = evt => {
   
   // User has changed the selected note or wants to sync it again
   if ((evt.key === 'syncSelectedNote'|| evt.key === 'selectedNote') && evt.newValue) {
-    checkTokenAndSync();
+    syncNote();
     return;
   }
 
   // User has reset setting and note should be reset too
   if (evt.key === 'clearSyncedNote' && evt.newValue) {
     clearSyncedNote();
+  }
+
+  // User wants to refresh the note list
+  if (evt.key === 'refreshNotes' && evt.newValue) {
+    refreshNotes();
   }
 
   // User has requested an access token
@@ -111,7 +121,7 @@ function settingExists(settingName: string): boolean {
 /**
  * Checks/gets the access token and syncs the selected note.
  */
-function checkTokenAndSync() {
+function syncNote() {
   if (!isAccessTokenValid()) {
     settingsStorage.setItem('oauth-loading', 'true');
     refreshAccessToken()
@@ -151,4 +161,20 @@ function getTokenAndApiData() {
       console.log('Not getting access token');
       settingsStorage.removeItem('oauth-loading')
     });
+}
+
+function refreshNotes() {
+  settingsStorage.removeItem('refreshNotes');
+  settingsStorage.removeItem('selectedNote');
+  settingsStorage.removeItem('syncError');
+
+  if (!isAccessTokenValid()) {
+    settingsStorage.setItem('oauth-loading', 'true');
+    refreshAccessToken()
+      .then(setExpiry)
+      .then(() => settingsStorage.removeItem('oauth-loading'))
+      .then(getNotes);
+  } else {
+    getNotes();
+  }
 }
