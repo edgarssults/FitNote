@@ -19,8 +19,8 @@ export function getNotes(): void {
     .then(response => setNotes(response))
     .then(() => settingsStorage.removeItem('notes-loading'))
     .catch(error => {
-      settingsStorage.removeItem('notes-loading');
       console.error(error.message);
+      settingsStorage.removeItem('notes-loading');
     });
 }
 
@@ -47,6 +47,7 @@ export function syncSelectedNote(): void {
   let token = getOAuthToken();
   if (!token) {
     console.error('syncSelectedNote: Could not get OAuth token!');
+    setSyncError('Could not sync note');
     settingsStorage.removeItem('sync-loading');
     return;
   }
@@ -55,6 +56,7 @@ export function syncSelectedNote(): void {
   let selectedNoteSetting = settingsStorage.getItem('selectedNote');
   if (!selectedNoteSetting) {
     console.error('Could not find selectedNote setting!');
+    setSyncError('Could not sync note');
     settingsStorage.removeItem('sync-loading');
     return;
   }
