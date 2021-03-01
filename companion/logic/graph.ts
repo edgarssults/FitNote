@@ -16,7 +16,7 @@ export function getGraphJson(endpoint: string, token: string): Promise<any> {
   
   return fetch(endpoint, options)
     .then(response => response.json())
-    .catch(error => console.error(error.message));
+    .catch(response => console.error(response.error.message));
 }
 
 /**
@@ -37,5 +37,5 @@ export function getGraphText(endpoint: string, token: string): Promise<any> {
   
   return fetch(endpoint, options)
     .then(response => response.text())
-    .catch(error => console.error(error.message));
+    .catch(response => console.error(response.error.message));
 }

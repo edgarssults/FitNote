@@ -20,7 +20,7 @@ export function getNotes(): void {
     .then(response => setNotes(response))
     .then(() => settingsStorage.removeItem('notes-loading'))
     .catch(error => {
-      console.error(error.message);
+      console.error(JSON.stringify(error));
       settingsStorage.removeItem('notes-loading');
     });
 }

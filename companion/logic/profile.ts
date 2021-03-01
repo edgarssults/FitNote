@@ -15,7 +15,7 @@ export function getProfile() {
   console.log('Getting profile data...');
   getGraphJson('https://graph.microsoft.com/v1.0/me', token)
     .then(response => setProfile(response))
-    .catch(error => console.error(error.message));
+    .catch(error => console.error(JSON.stringify(error)));
 }
 
 /**

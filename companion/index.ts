@@ -128,7 +128,11 @@ function syncNote() {
       .then(setExpiry)
       .then(() => settingsStorage.removeItem('oauth-loading'))
       .then(getNotes)
-      .then(syncSelectedNote);
+      .then(syncSelectedNote)
+      .catch(() => {
+        console.error('Error while refreshing access token!');
+        settingsStorage.removeItem('oauth-loading');
+      });
   } else {
     syncSelectedNote();
   }
@@ -155,11 +159,15 @@ function getTokenAndApiData() {
         .then(setExpiry)
         .then(getProfile)
         .then(() => settingsStorage.removeItem('oauth-loading'))
-        .then(getNotes);
+        .then(getNotes)
+        .catch(() => {
+          console.error('Error while getting access token!');
+          settingsStorage.removeItem('oauth-loading');
+        });
     })
     .catch(() => {
       console.log('Not getting access token');
-      settingsStorage.removeItem('oauth-loading')
+      settingsStorage.removeItem('oauth-loading');
     });
 }
 
@@ -175,7 +183,11 @@ function refreshNotes() {
     refreshAccessToken()
       .then(setExpiry)
       .then(() => settingsStorage.removeItem('oauth-loading'))
-      .then(getNotes);
+      .then(getNotes)
+      .catch(() => {
+        console.error('Error while refreshing access token!');
+        settingsStorage.removeItem('oauth-loading');
+      });
   } else {
     getNotes();
   }

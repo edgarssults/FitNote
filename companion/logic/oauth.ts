@@ -55,7 +55,7 @@ export function getAccessToken(): Promise<void> {
       previousCode = oauth.code;
       settingsStorage.setItem('oauth', JSON.stringify(response));
     })
-    .catch(error => console.error(error.message));
+    .catch(response => console.error(response.error.message));
 }
 
 /**
@@ -85,7 +85,7 @@ export function refreshAccessToken(): Promise<void> {
 
       settingsStorage.setItem('oauth', JSON.stringify(response));
     })
-    .catch(error => console.error(error.message));
+    .catch(response => console.error(response.error.message));
 }
 
 /**
