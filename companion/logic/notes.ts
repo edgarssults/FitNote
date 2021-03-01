@@ -13,6 +13,7 @@ export function getNotes(): void {
     return;
   }
 
+  console.log('Getting notes...');
   settingsStorage.setItem('notes-loading', 'true');
 
   getGraphJson('https://graph.microsoft.com/v1.0/me/onenote/pages?$select=id,title&$orderBy=lastModifiedDateTime%20desc', token)
@@ -31,12 +32,14 @@ export function getNotes(): void {
 function setNotes(noteData: any): void {
   let notes = noteData.value.map((n: { title: string; id: string; }) => ({ name: n.title, value: n.id }));
   settingsStorage.setItem('notes', JSON.stringify(notes));
+  console.log('Got notes');
 }
 
 /**
  * Syncs the selected note with the watch.
  */
 export function syncSelectedNote(): void {
+  console.log('Syncing note...');
   settingsStorage.setItem('sync-loading', 'true');
 
   // Reset the settings used to communicate with the settings page

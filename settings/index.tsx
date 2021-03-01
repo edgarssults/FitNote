@@ -17,7 +17,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
               requestTokenUrl="https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
               clientId="98d88e94-97a8-42dc-a692-cdcb8f79a9f3"
               clientSecret=""
-              scope="openid profile User.Read Notes.Read offline_access"
+              scope="openid profile User.Read Notes.Read Notes.Read.All offline_access"
               description="Please log in with your Microsoft account to see your notes"
               onReturn={async (response) => initiateAccessTokenRetrieval(settingsStorage, response)}
               onAccessToken={async () => {

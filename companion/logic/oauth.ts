@@ -1,5 +1,6 @@
 import { settingsStorage } from "settings";
 
+const scope = 'openid profile User.Read Notes.Read Notes.Read.All offline_access';
 let previousCode: string = "EMPTY";
 
 /**
@@ -36,7 +37,7 @@ export function getAccessToken(): Promise<void> {
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
       body: `client_id=98d88e94-97a8-42dc-a692-cdcb8f79a9f3
-      &scope=${encodeURI('openid profile User.Read Notes.Read offline_access')}
+      &scope=${encodeURI(scope)}
       &redirect_uri=${encodeURI('https://app-settings.fitbitdevelopercontent.com/simple-redirect.html')}
       &grant_type=authorization_code
       &state=${oauth.state}
@@ -46,6 +47,10 @@ export function getAccessToken(): Promise<void> {
   return fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', options)
     .then(response => response.json())
     .then(response => {
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
       // Have to keep code in a local variable in case of settings reset
       previousCode = oauth.code;
       settingsStorage.setItem('oauth', JSON.stringify(response));
@@ -65,7 +70,7 @@ export function refreshAccessToken(): Promise<void> {
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
       body: `client_id=98d88e94-97a8-42dc-a692-cdcb8f79a9f3
-      &scope=${encodeURI('openid profile User.Read Notes.Read offline_access')}
+      &scope=${encodeURI(scope)}
       &refresh_token=${oauth.refresh_token}
       &redirect_uri=${encodeURI('https://app-settings.fitbitdevelopercontent.com/simple-redirect.html')}
       &grant_type=refresh_token`
@@ -74,6 +79,10 @@ export function refreshAccessToken(): Promise<void> {
   return fetch('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', options)
     .then(response => response.json())
     .then(response => {
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
       settingsStorage.setItem('oauth', JSON.stringify(response));
     })
     .catch(error => console.error(error.message));

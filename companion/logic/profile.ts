@@ -12,6 +12,7 @@ export function getProfile() {
     return;
   }
 
+  console.log('Getting profile data...');
   getGraphJson('https://graph.microsoft.com/v1.0/me', token)
     .then(response => setProfile(response))
     .catch(error => console.error(error.message));
@@ -24,4 +25,5 @@ export function getProfile() {
 function setProfile(profileData: any) {
   settingsStorage.setItem('displayName', profileData.displayName ? profileData.displayName : '..');
   settingsStorage.setItem('userPrincipalName', profileData.userPrincipalName ? profileData.userPrincipalName : '..');
+  console.log('Got profile data');
 }
