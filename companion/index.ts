@@ -128,7 +128,6 @@ function syncNote() {
     refreshAccessToken()
       .then(setExpiry)
       .then(() => settingsStorage.removeItem('oauth-loading'))
-      .then(getNotes)
       .then(syncSelectedNote)
       .catch(error => {
         logError('Error while refreshing access token: ' + JSON.stringify(error));

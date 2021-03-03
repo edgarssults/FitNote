@@ -125,7 +125,7 @@ function sendToApp(noteContent: string): void {
   // Try to find paragraphs
   let paragraphMatches = noteContent.match(/\<p[^\>]+\>.*?\<\/p\>/g);
   if (!paragraphMatches) {
-    setSyncError('Could not find paragraphs in note!');
+    setSyncError('Could not find text in note!');
     return;
   }
   
