@@ -8,7 +8,7 @@ registerSettingsPage(({ settings, settingsStorage }) => {
         {isLoggedIn(settingsStorage)
           ? isLoggingIn(settingsStorage)
             ? <Loader message="Logging in..." />
-            : <Text>Logged in as {settingExists(settingsStorage, 'displayName') && settingExists(settingsStorage, 'userPrincipalName') ? `${settingsStorage.getItem('displayName')} (${settingsStorage.getItem('userPrincipalName')}` : '..'})</Text>
+            : <Text>Logged in as {settingExists(settingsStorage, 'displayName') && settingExists(settingsStorage, 'userPrincipalName') ? `${settingsStorage.getItem('displayName')} (${settingsStorage.getItem('userPrincipalName')})` : '..'}</Text>
           : <Oauth
               title="Microsoft Account Login"
               label="Microsoft Account"
@@ -62,6 +62,17 @@ registerSettingsPage(({ settings, settingsStorage }) => {
               onClick={() => initiateNoteRefresh(settingsStorage)}
             />
           }
+        </Section>
+      }
+
+      {settingExists(settingsStorage, 'errors') &&
+        <Section title={<Text bold align="center">Errors</Text>}>
+          {getErrors(settingsStorage).map(error => <Text>{error}</Text>)}
+          <Button
+            list
+            label="Clear errors"
+            onClick={() => clearErrors(settingsStorage)}
+          />
         </Section>
       }
         
@@ -146,6 +157,23 @@ function initiateNoteRefresh(settingsStorage: LiveStorage): void {
  */
 function initiateAccessTokenRetrieval(settingsStorage: LiveStorage, response: any): void {
   settingsStorage.setItem('oauth-response', JSON.stringify(response));
+}
+
+/**
+ * Clears logged errors.
+ * @param settingsStorage Settings storage instance.
+ */
+function clearErrors(settingsStorage: LiveStorage): void {
+  settingsStorage.removeItem('errors');
+}
+
+/**
+ * errors
+ * @param settingsStorage Settings storage instance.
+ */
+function getErrors(settingsStorage: LiveStorage): string[] {
+  let errors = settingsStorage.getItem('errors');
+  return errors ? JSON.parse(errors) : [];
 }
 
 function isLoggingIn(settingsStorage: LiveStorage): boolean {

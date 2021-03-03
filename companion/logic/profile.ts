@@ -1,6 +1,7 @@
 import { settingsStorage } from "settings";
 import { getGraphJson } from "./graph";
 import { getOAuthToken } from "./oauth";
+import { logError } from "./errors";
 
 /**
  * Gets profile from the MS Graph API.
@@ -8,14 +9,14 @@ import { getOAuthToken } from "./oauth";
 export function getProfile() {
   let token = getOAuthToken();
   if (!token) {
-    console.error('getProfile: Could not get OAuth token!');
+    logError('Could not get OAuth token to get profile data!');
     return;
   }
 
   console.log('Getting profile data...');
   getGraphJson('https://graph.microsoft.com/v1.0/me', token)
     .then(response => setProfile(response))
-    .catch(error => console.error(JSON.stringify(error)));
+    .catch(error => logError('Error while getting profile data: ' + JSON.stringify(error)));
 }
 
 /**

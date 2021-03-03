@@ -2,6 +2,7 @@ import { peerSocket } from 'messaging';
 import { settingsStorage } from "settings";
 import { getGraphText, getGraphJson } from "./graph";
 import { getOAuthToken } from "./oauth";
+import { logError } from "./errors";
 
 /**
  * Gets notes from MS Graph API.
@@ -9,7 +10,7 @@ import { getOAuthToken } from "./oauth";
 export function getNotes(): void {
   let token = getOAuthToken();
   if (!token) {
-    console.error('getNotes: Could not get OAuth token!');
+    logError('Could not get OAuth token to get notes!');
     return;
   }
 
@@ -20,7 +21,7 @@ export function getNotes(): void {
     .then(response => setNotes(response))
     .then(() => settingsStorage.removeItem('notes-loading'))
     .catch(error => {
-      console.error(JSON.stringify(error));
+      logError('Error while getting notes: ' + JSON.stringify(error));
       settingsStorage.removeItem('notes-loading');
     });
 }
@@ -49,7 +50,7 @@ export function syncSelectedNote(): void {
 
   let token = getOAuthToken();
   if (!token) {
-    console.error('syncSelectedNote: Could not get OAuth token!');
+    logError('Could not get OAuth token to sync note!');
     setSyncError('Could not sync note');
     settingsStorage.removeItem('sync-loading');
     return;
@@ -58,7 +59,7 @@ export function syncSelectedNote(): void {
   // Get the selectedNote setting
   let selectedNoteSetting = settingsStorage.getItem('selectedNote');
   if (!selectedNoteSetting) {
-    console.error('Could not find selectedNote setting!');
+    logError('Could not find selectedNote setting!');
     setSyncError('Could not sync note');
     settingsStorage.removeItem('sync-loading');
     return;
@@ -162,6 +163,5 @@ function sendToApp(noteContent: string): void {
  * @param error Error string.
  */
 function setSyncError(error: string): void {
-  console.error(error);
   settingsStorage.setItem('syncError', error);
 }

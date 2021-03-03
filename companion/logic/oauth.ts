@@ -1,4 +1,5 @@
 import { settingsStorage } from "settings";
+import { logError } from "./errors";
 
 const scope = 'openid profile User.Read Notes.Read Notes.Read.All offline_access';
 let previousCode: string = "EMPTY";
@@ -55,7 +56,6 @@ export function getAccessToken(): Promise<void> {
       previousCode = oauth.code;
       settingsStorage.setItem('oauth', JSON.stringify(response));
     })
-    .catch(response => console.error(response.error.message));
 }
 
 /**
@@ -85,7 +85,6 @@ export function refreshAccessToken(): Promise<void> {
 
       settingsStorage.setItem('oauth', JSON.stringify(response));
     })
-    .catch(response => console.error(response.error.message));
 }
 
 /**
@@ -137,7 +136,7 @@ export function isAccessTokenValid(): boolean {
 function getOAuthData(): any {
   let oauthSetting = settingsStorage.getItem('oauth');
   if (!oauthSetting) {
-    console.error('Could not find oauth setting!');
+    logError('Could not find oauth setting!');
     return null;
   }
 
@@ -151,7 +150,7 @@ function getOAuthData(): any {
 function getOAuthResponseData(): any {
   let oauthSetting = settingsStorage.getItem('oauth-response');
   if (!oauthSetting) {
-    console.error('Could not find oauth-response setting!');
+    logError('Could not find oauth-response setting!');
     return null;
   }
 

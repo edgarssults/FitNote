@@ -4,6 +4,7 @@ import { me } from "companion";
 import { getProfile } from "./logic/profile";
 import { getNotes, syncSelectedNote, syncQueuedNote, clearSyncedNote } from "./logic/notes";
 import { setExpiry, getAccessToken, refreshAccessToken, checkAccessCode, isAccessTokenValid } from "./logic/oauth";
+import { logError } from "./logic/errors";
 
 // Reset the settings used to communicate with the settings page
 settingsStorage.removeItem('syncSelectedNote');
@@ -129,8 +130,8 @@ function syncNote() {
       .then(() => settingsStorage.removeItem('oauth-loading'))
       .then(getNotes)
       .then(syncSelectedNote)
-      .catch(() => {
-        console.error('Error while refreshing access token!');
+      .catch(error => {
+        logError('Error while refreshing access token: ' + JSON.stringify(error));
         settingsStorage.removeItem('oauth-loading');
       });
   } else {
@@ -160,8 +161,8 @@ function getTokenAndApiData() {
         .then(getProfile)
         .then(() => settingsStorage.removeItem('oauth-loading'))
         .then(getNotes)
-        .catch(() => {
-          console.error('Error while getting access token!');
+        .catch(error => {
+          logError('Error while getting access token: ' + JSON.stringify(error));
           settingsStorage.removeItem('oauth-loading');
         });
     })
@@ -184,8 +185,8 @@ function refreshNotes() {
       .then(setExpiry)
       .then(() => settingsStorage.removeItem('oauth-loading'))
       .then(getNotes)
-      .catch(() => {
-        console.error('Error while refreshing access token!');
+      .catch(error => {
+        logError('Error while refreshing access token: ' + JSON.stringify(error));
         settingsStorage.removeItem('oauth-loading');
       });
   } else {
