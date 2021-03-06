@@ -27,11 +27,6 @@ if (me.launchReasons.settingsChanged) {
     refreshNotes();
   }
 
-  // User has logged in
-  if (settingExists('oauth')) {
-    getApiData();
-  }
-
   // User has requested an access token
   if (settingExists('oauth-response')) {
     getTokenAndApiData();
@@ -48,13 +43,6 @@ settingsStorage.onchange = evt => {
   }
   
   console.log(`Setting changed: ${evt.key}\n${evt.oldValue}\n>>>\n${evt.newValue}`);
-  
-  // User has logged in
-  // This is the default handling
-  if (evt.key === 'oauth' && evt.newValue) {
-    getApiData();
-    return;
-  }
   
   // User has changed the selected note or wants to sync it again
   if ((evt.key === 'syncSelectedNote'|| evt.key === 'selectedNote') && evt.newValue) {
@@ -73,7 +61,6 @@ settingsStorage.onchange = evt => {
   }
 
   // User has requested an access token
-  // This is our custom handling
   if (evt.key === 'oauth-response' && evt.newValue) {
     getTokenAndApiData();
     return;
@@ -120,34 +107,6 @@ function settingExists(settingName: string): boolean {
 }
 
 /**
- * Checks/gets the access token and syncs the selected note.
- */
-function syncNote() {
-  if (!isAccessTokenValid()) {
-    settingsStorage.setItem('oauth-loading', 'true');
-    refreshAccessToken()
-      .then(setExpiry)
-      .then(() => settingsStorage.removeItem('oauth-loading'))
-      .then(syncSelectedNote)
-      .catch(error => {
-        logError('Error while refreshing access token: ' + JSON.stringify(error));
-        settingsStorage.removeItem('oauth-loading');
-      });
-  } else {
-    syncSelectedNote();
-  }
-}
-
-/**
- * Gets data that is available from the Graph API.
- */
-function getApiData() {
-  setExpiry();
-  getProfile();
-  getNotes();
-}
-
-/**
  * Gets the access token and gets data that is available from the Graph API.
  */
 function getTokenAndApiData() {
@@ -171,6 +130,28 @@ function getTokenAndApiData() {
     });
 }
 
+/**
+ * Checks/gets the access token and syncs the selected note.
+ */
+function syncNote() {
+  if (!isAccessTokenValid()) {
+    settingsStorage.setItem('oauth-loading', 'true');
+    refreshAccessToken()
+      .then(setExpiry)
+      .then(() => settingsStorage.removeItem('oauth-loading'))
+      .then(syncSelectedNote)
+      .catch(error => {
+        logError('Error while refreshing access token: ' + JSON.stringify(error));
+        settingsStorage.removeItem('oauth-loading');
+      });
+  } else {
+    syncSelectedNote();
+  }
+}
+
+/**
+ * Checks/gets the access token and gets the list of notes.
+ */
 function refreshNotes() {
   settingsStorage.setItem('notes-loading', 'true');
   settingsStorage.removeItem('refreshNotes');
