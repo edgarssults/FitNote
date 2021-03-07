@@ -43,11 +43,6 @@ export function syncSelectedNote(): void {
   console.log('Syncing note...');
   settingsStorage.setItem('sync-loading', 'true');
 
-  // Reset the settings used to communicate with the settings page
-  settingsStorage.removeItem('syncSelectedNote');
-  settingsStorage.removeItem('syncError');
-  settingsStorage.removeItem('selectedNoteSynced');
-
   let token = getOAuthToken();
   if (!token) {
     logError('Could not get OAuth token to sync note!');

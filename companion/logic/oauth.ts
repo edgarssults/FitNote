@@ -119,14 +119,17 @@ export function checkAccessCode(): Promise<void> {
 export function isAccessTokenValid(): boolean {
   let expirySetting = settingsStorage.getItem('oauthExpires');
   if (!expirySetting) {
+    console.log('Access token is not valid because no expiry setting found.');
     return false;
   }
 
   let expiry = parseInt(expirySetting);
   if (expiry <= Date.now()) {
+    console.log('Access token is not valid because it has expired.');
     return false;
   }
 
+  console.log('Access token is valid.');
   return true;
 }
 

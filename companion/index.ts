@@ -126,6 +126,7 @@ function getTokenAndApiData() {
     })
     .catch(() => {
       console.log('Not getting access token');
+      settingsStorage.removeItem('oauth-response');
       settingsStorage.removeItem('oauth-loading');
     });
 }
@@ -134,15 +135,17 @@ function getTokenAndApiData() {
  * Checks/gets the access token and syncs the selected note.
  */
 function syncNote() {
+  settingsStorage.setItem('sync-loading', 'true');
+  settingsStorage.removeItem('syncSelectedNote');
+  settingsStorage.removeItem('syncError');
+  settingsStorage.removeItem('selectedNoteSynced');
+  
   if (!isAccessTokenValid()) {
-    settingsStorage.setItem('oauth-loading', 'true');
     refreshAccessToken()
       .then(setExpiry)
-      .then(() => settingsStorage.removeItem('oauth-loading'))
       .then(syncSelectedNote)
       .catch(error => {
         logError('Error while refreshing access token: ' + JSON.stringify(error));
-        settingsStorage.removeItem('oauth-loading');
       });
   } else {
     syncSelectedNote();
@@ -160,14 +163,11 @@ function refreshNotes() {
   settingsStorage.removeItem('notes');
 
   if (!isAccessTokenValid()) {
-    settingsStorage.setItem('oauth-loading', 'true');
     refreshAccessToken()
       .then(setExpiry)
-      .then(() => settingsStorage.removeItem('oauth-loading'))
       .then(getNotes)
       .catch(error => {
         logError('Error while refreshing access token: ' + JSON.stringify(error));
-        settingsStorage.removeItem('oauth-loading');
       });
   } else {
     getNotes();
