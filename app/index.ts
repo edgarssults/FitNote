@@ -9,14 +9,12 @@ const scrollView = <GraphicsElement>document.getElementById("sv");
 const border = <GraphicsElement>document.getElementById("border");
 const introImage = <GraphicsElement>document.getElementById("introImage");
 const introText = <GraphicsElement>document.getElementById("introText");
-const loader = <GraphicsElement>document.getElementById("loader");
 
 // Load the synced note from file
 if (fs.existsSync(singleNoteFileName)) {
   console.log('Loading note from file...');
   hideIntro();
   hideNote();
-  showLoader();
   let settings = fs.readFileSync(singleNoteFileName, 'json');
   displayNote(settings);
 }
@@ -35,7 +33,6 @@ peerSocket.onmessage = message => {
   console.log('Loading note from message...');
   hideIntro();
   hideNote();
-  showLoader();
   fs.writeFileSync(singleNoteFileName, message.data, 'json');
   displayNote(message.data);
 };
@@ -64,8 +61,8 @@ peerSocket.onclose = () => {
  * Displays the note.
  * @param paragraphs Note.
  */
-function displayNote(paragraphs: string[]): void {
-  hideLoader();
+function displayNote(paragraphs: string[]) {
+  console.log(`Note contains ${paragraphs.length} paragraphs`);
   showNote();
 
   // Set texts
@@ -140,17 +137,5 @@ function hideIntro(): void {
   if (introImage && introText) {
     introImage.style.visibility = 'hidden';
     introText.style.visibility = 'hidden';
-  }
-}
-
-function showLoader(): void {
-  if (loader) {
-    loader.style.visibility = "visible";
-  }
-}
-
-function hideLoader(): void {
-  if (loader) {
-    loader.style.visibility = "hidden";
   }
 }
