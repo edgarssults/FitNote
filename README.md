@@ -16,4 +16,4 @@ In VS Code command line run `npx fitbit`. Then run either `build` to build the a
 
 # Credits
 
-Smartwatch icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [Flaticon](https://www.flaticon.com/).
+Smartwatch icon made by [Freepik](https://www.flaticon.com/authors/freepik) from [Flaticon](https://www.flaticon.com/).
